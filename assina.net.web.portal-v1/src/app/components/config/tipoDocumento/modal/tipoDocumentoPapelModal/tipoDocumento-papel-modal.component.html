@@ -1,0 +1,37 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" id="formGroup" novalidate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Cadastro > Contrato > Contrato Partes'" [item]="papelEdit" [form]="form"
+            (antesSalvarEvent)="antesSalvarEvent()">
+            <div>
+                <div class="col-md-6">
+                    <select [(ngModel)]="papelEdit.papel.id" class="form-control" name="tipoPessoa"
+                        [ngStyle]="classUpperCase()" id="inputTipoPessoa" ng-dropdown #tipoPessoa="ngModel" required>
+                        <option *ngFor="let tipoPessoa of papelList" [value]="tipoPessoa.item_id">
+                            {{tipoPessoa.item_text}}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="control-label">Token: </label>
+                    <ui-switch [(ngModel)]="papelEdit.token" name="papelItemToken" id="token"
+                        [ngStyle]="classUpperCase()" #token="ngModel" class="switch100"
+                        checkedLabel="Sim" uncheckedLabel="Não">
+                    </ui-switch>
+                </div>
+                <div class="col-md-6">
+                    <label class="control-label">Certificado: </label>
+                    <ui-switch [(ngModel)]="papelEdit.certificate" name="papelItemCertificate" id="certificate"
+                        [ngStyle]="classUpperCase()" #certificate="ngModel" class="switch100"
+                        checkedLabel="Sim" uncheckedLabel="Não">
+                    </ui-switch>
+                </div>
+
+                <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                    {{ message.text }}
+                </ngb-alert>
+
+            </div>
+        </app-modal-simples>
+    </div>
+</form>

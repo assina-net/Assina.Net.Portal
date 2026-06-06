@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <title>Assina.Net</title>
+    <base href="/">
+    <link rel="icon" type="image/ico" href="assets/img/favicon.ico"/>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href="assets/fonts/feather/style.min.css" rel="stylesheet">
+    <link href="assets/fonts/simple-line-icons/style.css" rel="stylesheet">
+    <link href='//fonts.googleapis.com/css?family=Rubik:300,400,500,700,900|Montserrat:300,400,500,600,700,800,900'
+          rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/vendor/pace/themes/black/pace-theme-flash.css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style type="text/css">
+    .pace .pace-activity {
+      top: 19px;
+      right: 19px;
+      display: none;
+    }
+    .page-loading {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      overflow: hidden;
+      background: #f5f7fa;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      z-index: -1;
+    }
+    .loading-icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      /*width: 160px;*/
+      /*height: 160px;*/
+      margin-left: -300px;
+      margin-top: -200px;
+    }
+    app-root:empty ~ .page-loading {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    </style>
+
+   <!-- Global site tag (gtag.js) - Google Analytics -->
+   <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  </script>
+
+</head>
+<body>
+<app-root></app-root>
+<div class="page-loading">
+    <img src="assets/img/aguarde.gif" class="loading-icon"/>
+</div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<a href="https://api.whatsapp.com/send?phone=5519998313588&text=Olá,%20estou%20precisando%20de%20ajuda." style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
+  z-index:1000;" target="_blank">
+    <i style="margin-top:16px" class="fa fa-whatsapp"></i>
+</a>
+</body>
+
+</html>

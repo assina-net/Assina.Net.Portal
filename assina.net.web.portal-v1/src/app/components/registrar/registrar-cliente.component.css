@@ -1,0 +1,27 @@
+.blur3{-webkit-filter: blur(3px);
+    -moz-filter: blur(3px);
+    -o-filter: blur(3px);
+    -ms-filter: blur(3px);
+    filter: blur(3px);}
+
+.content-header{
+    font-weight: normal;
+    letter-spacing: 0.5px;
+    font-size: 1.6rem;
+    margin-top: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.logo-img{
+    height: 40px;
+    display: inline-block;
+
+}
+
+.textCenter{
+    text-align: center;
+}
+
+.rgie{
+    visibility: hidden;
+}

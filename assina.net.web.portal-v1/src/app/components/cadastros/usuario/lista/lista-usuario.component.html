@@ -1,0 +1,75 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form autocomplete="off" class="form form-horizontal">
+        <!--<span style="display: inline-flex;">
+           <app-botoes-lista [permiteIncluir]="perfilEditar" [permiteExcluir]="perfilEditar" (incluirEvent)="incluir()"
+                (editarEvent)="editar()" (excluirEvent)="excluir()" [selecionado]="!objetoSelecionado">
+            </app-botoes-lista>
+        </span>-->
+        <div>
+            <combo-pessoa-cliente (clienteChangeEvent)="clienteChange()" [excluirPerfilAssinador]="true"
+                [mostrarSistema]="true">
+            </combo-pessoa-cliente>
+        </div>
+        <div class="table-responsive table-border-style table-wrapper-scroll-x table-wrapper-scroll-y rounded  infinite-scroll" infiniteScroll
+        [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [fromRoot]="true"
+        [infiniteScrollContainer]="'.infinite-scroll'">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+
+                        <th><a sortable-column="nome" class="">Nome</a>
+                            <input type="text" ([formControl])="filtro" [ngStyle]="classUpperCase()"
+                                [(ngModel)]="filtro.usuario.pessoa.nomeRazaoSocial" name="nome" class="form-control"
+                                id="nome" placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th><a sortable-column="login">E-mail</a>
+                            <input type="text" [(ngModel)]="filtro.usuario.login" name="login" class="form-control"
+                                   (ngModelChange)="filtrando()" [ngStyle]="classLowerCase()" id="login"
+                                   placeholder="Pesquisar...">
+                        </th>
+                        <th><a sortable-column="perfil">Perfil</a>
+                            <select class="form-control" [(ngModel)]="filtro.usuario.perfil" id="perfil" name="perfil"
+                                [ngStyle]="classUpperCase()" (ngModelChange)="filtrando()">
+                                <option [ngValue]="null">Selecione</option>
+                                <option *ngFor="let opcao of opcoesPerfil" [value]="opcao.value">{{opcao.label}}
+                                </option>
+                            </select>
+                        </th>
+                        <th><a sortable-column="status">Status</a>
+                            <select class="form-control" [(ngModel)]="filtro.status" id="status" name="status"
+                                [ngStyle]="classUpperCase()" (ngModelChange)="filtrando()">
+                                <option [ngValue]="null">Selecione</option>
+                                <option *ngFor="let opcao of opcoesStatus" [value]="opcao.value">{{opcao.label}}
+                                </option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody [ngStyle]="classUpperCase()">
+                    <tr *ngFor="let usuario of listagem" (click)="selecionarLinha(usuario)"
+                        [ngClass]="legendaGrid(usuario)" (dblclick)="editar(false)">
+                        <td>{{usuario.pessoa.nomeRazaoSocial}}</td>
+                        <td>{{usuario.pessoa.email}}</td>
+                        <td>{{usuario.descPerfil | uppercase}}</td>
+                        <td>{{usuario.descStatus | uppercase}}</td>
+                    </tr>
+                    <tr *ngIf="!listagem.length">
+                        <td colspan="5">Nenhum registro encontrado</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+        <div class="text-right col-md-12 m-1">
+
+            <app-botoes-lista [permiteIncluir]="perfilEditar" [permiteExcluir]="perfilEditar" (incluirEvent)="incluir()"
+                (editarEvent)="editar()" (excluirEvent)="excluir()" [selecionado]="!objetoSelecionado">
+            </app-botoes-lista>
+
+        </div>
+        <div class="box-footer clearfix">
+            <!-- <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>-->
+        </div>
+    </form>
+</app-form-simples>

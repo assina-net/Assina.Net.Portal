@@ -1,0 +1,79 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form autocomplete="off" class="form form-horizontal">
+
+        <div>
+            <combo-pessoa-cliente (clienteChangeEvent)="clienteChange()" [somentePerfilAdministrador]="true"
+                [mostrarSistema]="true">
+            </combo-pessoa-cliente>
+        </div>
+        <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y rounded  infinite-scroll"
+            infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()"
+            [fromRoot]="true" [infiniteScrollContainer]="'.infinite-scroll'">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+                        <th width="350px"><a sortable-column="nome" sort-direction="ASC">Nome</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.nome"
+                                [ngStyle]="classUpperCase()" name="nome" class="form-control" id="tipoDocumento"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="50px"><a sortable-column="assina">Assina</a>
+                            <input type="text" [(ngModel)]="filtro.assina" name="naoAssina" class="form-control"
+                                [ngStyle]="classUpperCase()" id="assina" placeholder="Pesquisar..."
+                                (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="150px" style="vertical-align:top;">
+                            Papéis
+                        </th>
+                        <th width="150px" style="vertical-align:top;"  *ngIf="perfilUsuarioAdmin()">
+                            Tipos de Clientes
+                        </th>
+                    </tr>
+                </thead>
+                <tbody [ngStyle]="classUpperCase()">
+                    <tr *ngFor="let tipoDocumento of listagem" (click)="selecionarLinha(tipoDocumento)"
+                        [ngClass]="legendaGrid(tipoDocumento)" (dblclick)="editar(false)">
+                        <td>{{tipoDocumento.nome}}</td>
+                        <td>
+                            <i class="ft-check-circle primary font-medium-3" *ngIf="tipoDocumento.assina"></i>
+                            <i class="ft-minus-circle danger font-medium-3" *ngIf="!tipoDocumento.assina"></i>
+                        </td>
+                        <td>
+                            <div *ngFor="let papel of tipoDocumento.papeis; let i = index"
+                                style="display: inline-table">
+                                <span style="display: inline-flex;font-size: x-small;">
+                                    <span style="margin-left:5px">{{papel.papel.nome}}</span>
+                                    <span style="margin-left:5px" *ngIf="i < tipoDocumento.papeis.length -1 "> - </span>
+                                </span>
+                            </div>
+                        </td>
+                        <td  *ngIf="perfilUsuarioAdmin()">
+                            <div *ngFor="let tipoCliente of tipoDocumento.tipoDocumentoTipoClientes; let i = index"
+                                style="display: inline-table">
+                                <span style="display: inline-flex;font-size: x-small;">
+                                    <span style="margin-left:5px">{{tipoCliente.segmento.nome}}</span>
+                                    <span style="margin-left:5px"
+                                        *ngIf="i < tipoDocumento.tipoDocumentoTipoClientes.length -1 "> - </span>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!listagem.length">
+                        <td colspan="2">Nenhum registro encontrado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row m-2">
+            <div class="col-md-12 text-right clearfix">
+                <app-botoes-lista [permiteIncluir]="true" [permiteExcluir]="true" (incluirEvent)="incluir()"
+                    (editarEvent)="editar()" (excluirEvent)="excluir()" [selecionado]="!objetoSelecionado">
+                </app-botoes-lista>
+            </div>
+        </div>
+        <!--<div class="box-footer clearfix">
+            <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>
+        </div>-->
+
+    </form>
+</app-form-simples>

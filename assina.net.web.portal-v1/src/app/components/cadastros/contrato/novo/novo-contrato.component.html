@@ -1,0 +1,138 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota">
+
+
+
+
+    <form class="form form-horizontal" #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" novalidate>
+        <div class="form-body">
+            <h4 class="form-section mb-1">
+                <div *ngIf="!editando && !consultando">
+                    <!--i class="fa fa-plus"></i>--> Novo cadastro</div>
+                <div *ngIf="editando && !consultando">
+                    <!--<i class="fa fa-edit"></i>--> Editando cadastro</div>
+                <div *ngIf="consultando">
+                    <!--<i class="fa fa-eye"></i>--> Consultando cadastro</div>
+            </h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputIdentificador" class="control-label">Identificador</label>
+                    <input type="text" [(ngModel)]="ContratoRequest.contrato.identificador" name="identificador"
+                        [ngStyle]="classUpperCase()" class="form-control" id="inputIdentificador"
+                        #identificador="ngModel" placeholder="Informe" upperCase minlength="3" maxlength="255" required
+                        appAutofocus>
+                    <small class="form-text text-muted danger"
+                        *ngIf="identificador.errors?.required && (identificador.dirty || identificador.touched)">Informe
+                        o Identificador
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="identificador.errors?.minlength && (identificador.dirty || identificador.touched)">Informe
+                        no mínimo 3 carateres
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputAssunto" class="control-label">Assunto</label>
+                    <input type="text" [(ngModel)]="ContratoRequest.contrato.assunto" name="x" class="form-control"
+                        [ngStyle]="classUpperCase()" id="inputAssunto" #assunto="ngModel" placeholder="Informe"
+                        upperCase maxlength="255" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="assunto.errors?.required && (assunto.dirty || assunto.touched)">Informe o Assunto
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="assunto.errors?.pattern && (assunto.dirty || assunto.touched)">Informe apenas letras e
+                        números [Aa-Zz][0-9]
+                    </small>
+                </div>
+            </div>
+
+            
+            <div>
+                <div>
+                    <br />
+                    <app-complete-tab-form [content]="contratoDocumentoForm" [dados]="contratoDocumentoModal"
+                        [dadosComplementares]="dadosComplementaresDocumento" [cols]="titulosDocumentos"
+                        [showButtons]="!consultando" [novoRegistro]="'Novo Arquivo'"
+                        [mensagemExclusao]="'Deseja excluir o documento ? '" [permiteEditar]="false"
+                        [viewerDoc]="contratoDocumentoVisualizarForm" [permiteExibirDocumento]="true"
+                        (change)="adicionouContratoDocumento()" [itemTemplate]="detalheArquivo">
+                        <ng-template #detalheArquivo let-item>
+                            <td>{{item.nomeDocumento}}</td>
+                            <td>{{item.tipoDocumento.nome}}</td>
+                            <td>{{item.descStatusDocumento}}</td>
+                            <td>
+                                <div *ngFor="let papel of item.papel" style="display: inline-table">
+                                    <span style="display: inline-flex;font-size: x-small;">
+                                        <span style="margin-left:5px">{{papel.papel.nome}}</span>
+                                    </span>
+
+                                </div>
+                            </td>
+                        </ng-template>
+                    </app-complete-tab-form>
+
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+
+
+                </div>
+            </div>
+
+            <div *ngIf="contratoDocumentoModal.listagem.length > 0">
+                <div>
+                    <br />
+                    <app-cadastro-parte-form [dados]="contratoParteModal" [contratoPapelList]="this.contratoPapelList"
+                        [showButtons]="!consultando" (change)="adicionouContratoParte()"
+                        [statusContrato]="ContratoRequest.contrato.statusContrato">
+                    </app-cadastro-parte-form>
+
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+
+                </div>
+            </div>
+
+            <div *ngIf="contratoDocumentoModal.listagem.length > 0 && mostraObservador()">
+                <div>
+                    <br />
+                    <app-cadastro-parte-form [dados]="contratoObservadoresModal" [contratoPapelList]="[]"
+                        [showButtons]="!consultando" (change)="adicionouObservador()"
+                        [statusContrato]="ContratoRequest.contrato.statusContrato"
+                        [novoRegistro]="'Novo Observador'"
+                        [tipoCadastro]="'OBSERVADOR'"
+                        [mensagemExclusao]="'Deseja retirar esta parte para assinatura ? '"
+                        >
+                    </app-cadastro-parte-form>
+
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+
+                <app-botoes-cadastro [editando]="editando" [podeVoltar]="podeVoltar" [consultando]="consultando"
+                    (cancelarEvent)="cancelar()" (voltarEvent)="voltar()" (excluirEvent)="excluir()">
+                    
+                    <div inicio>
+                        <button class="btn btn-lg btn-raised btn-blue-as" type="button" (click)="contratoDownload()"
+                            *ngIf="ContratoRequest.contrato.statusContrato=='ASSINADO'">
+                            <!--<i class="fa fa-download"></i>--> Download
+                        </button>
+                        <button class="btn btn-lg  btn-raised btn-primary" type="button" (click)="liberarAssinatura()"
+                            [hidden]="consultando">
+                            <!-- <i class="fa fa-edit"></i>--> Salvar e liberar para assinatura
+                        </button>
+                    </div>
+                    
+                </app-botoes-cadastro>
+
+            </div>
+        </div>
+
+    </form>
+</app-form-simples>

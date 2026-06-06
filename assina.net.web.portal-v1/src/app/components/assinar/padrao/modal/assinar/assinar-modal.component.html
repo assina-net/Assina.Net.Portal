@@ -1,0 +1,252 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" novalidate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Assinar > Documento > Assinar'">
+            <h5 class="text-center blue-as pt-2">Selecione abaixo o procedimento de assinatura</h5>
+            <mat-tab-group dynamicHeight="true" disableRipple="true" class="m-4">
+
+                <mat-tab label="Assinatura Eletrônica" *ngIf="assinaViaAssinaturaEletronica()">
+                    <form class="form form-horizontal" #form="ngForm" (ngSubmit)="assinarViaCodigo()" autocomplete="off"
+                        novalidate>
+
+                        <div class="row desktop">
+
+                            <div class="col-md-12">
+                                <table class="table table-hover table-sm" *ngIf="exibeEscolhaViaAssinaturaEletronica()">
+                                    <thead class="thead-custom">
+                                        <tr>
+                                            <th width="33%">Escolha uma opcão para receber o código
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let celular of whatsappParaAssinatura" 
+                                            [ngClass]="selecionarGridEnvio({'tipo': 'WHATSAPP', 'item':celular})"
+                                            (click)="selecionarLinhaEnvio(celular, 'WHATSAPP')">
+                                            <td>Via WhatsApp: <b>{{celular | uppercase}}</b></td>
+                                        </tr>
+                                        <tr *ngFor="let celular of celularesParaAssinatura"
+                                            [ngClass]="selecionarGridEnvio({'tipo': 'SMS', 'item':celular})"
+                                            (click)="selecionarLinhaEnvio(celular, 'SMS')">
+                                            <td>Via SMS: <b>{{celular | uppercase}}</b></td>
+                                        </tr>
+                                        <tr *ngFor="let email of emailsParaAssinatura"
+                                            [ngClass]="selecionarGridEnvio({'tipo': 'EMAIL', 'item':email})"
+                                            (click)="selecionarLinhaEnvio(email, 'EMAIL')">
+                                            <td>Via e-mail: <b>{{email | lowercase}}</b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <label for="inputCodigo" class="control-label blue-as text-center"
+                                    *ngIf="!exibeEscolhaViaAssinaturaEletronica()">
+                                    O Código será envido via {{tipoEnvio=='SMS'?'SMS':'EMAIL'}} para :
+                                    {{emailSelecionado}}
+                                </label>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-center blue-as pt-4 pb-4">Clique em
+                                    <span class="blue-as" style="font-weight: 400;">SOLICITAR CÓDIGO</span> para receber
+                                    o código que deve ser inserido no
+                                    campo abaixo. Então, clique em <span class="primary"
+                                        style="font-weight: 400;">ASSINAR
+                                        DOCUMENTO</span> para realizar a assinatura.
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 ">
+                                <!-- <label>Clique no botão abaixo para receber o código de assinatura</label>-->
+
+                                <button class="btn btn-raised btn-blue-as text-uppercase btn-lg" type="button"
+                                    (click)="enviaCodigo()">
+                                    <!--<i class="fa fa-envelope-square"></i>--> Solicitar Código
+                                </button>
+                            </div>
+
+                            <div class="col-md-10 blue-as text-center">
+                                <label for="inputCodigo" class="control-label blue-as text-center">Insira o código
+                                    recebido </label>
+                                <input type="number" [(ngModel)]="codigoDigitado" name="inputCodigo"
+                                    class="form-control" id="inputCodigo" #identificador="ngModel" placeholder="Informe"
+                                    minlength="3" maxlength="8" required appAutofocus>
+                            </div>
+
+
+
+                        </div>
+                        <div class="row mobile">
+
+                            <div class="col-md-12">
+                                <table class="table table-hover table-sm" *ngIf="exibeEscolhaViaAssinaturaEletronica()">
+                                    <thead class="thead-custom">
+                                        <tr>
+                                            <th width="33%">Esolha um e-mail para receber o código
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let celular of whatsappParaAssinatura" 
+                                            [ngClass]="selecionarGridEnvio({'tipo': 'WHATSAPP', 'item':celular})"
+                                            (click)="selecionarLinhaEnvio(celular, 'WHATSAPP')">
+                                            <td>Via WhatsApp: {{celular | uppercase}}</td>
+                                        </tr>
+                                        <tr *ngFor="let celular of celularesParaAssinatura"
+                                            [ngClass]="selecionarGridEnvio({'tipo': 'SMS', 'item':celular})"
+                                            (click)="selecionarLinhaEnvio(celular, 'SMS')">
+                                            <td>Via SMS: {{celular | uppercase}}</td>
+                                        </tr>
+                                        <tr *ngFor="let email of emailsParaAssinatura"
+                                            [ngClass]="selecionarGridEnvio({'tipo': 'EMAIL', 'item':email})"
+                                            (click)="selecionarLinhaEnvio(email, 'EMAIL')">
+                                            <td>Via e-mail: {{email | lowercase}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <label for="inputCodigo" class="control-label blue-as text-center"
+                                    *ngIf="!exibeEscolhaViaAssinaturaEletronica()">
+                                    O Código será envido via {{tipoEnvio=='SMS'?'SMS':'EMAIL'}} para :
+                                    {{emailSelecionado}}
+                                </label>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-center blue-as pt-4 pb-4">Clique em
+                                    <span class="blue-as" style="font-weight: 400;">SOLICITAR CÓDIGO</span> para receber
+                                    o código que deve ser inserido no
+                                    campo abaixo. Então, clique em <span class="primary"
+                                        style="font-weight: 400;">ASSINAR
+                                        DOCUMENTO</span> para realizar a assinatura.
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 ">
+                                <!-- <label>Clique no botão abaixo para receber o código de assinatura</label>-->
+
+                                <button class="btn btn-raised btn-blue-as text-uppercase w-100 btn-lg" type="button"
+                                    (click)="enviaCodigo()">
+                                    <!--<i class="fa fa-envelope-square"></i>--> Solicitar Código
+                                </button>
+                            </div>
+
+                            <div class="col-md-8 blue-as text-center">
+                                <label for="inputCodigoMob" class="control-label blue-as text-center">Insira o código
+                                    recebido</label>
+                                <input type="number" [(ngModel)]="codigoDigitado" name="inputCodigo"
+                                    class="form-control" id="inputCodigoMob" #identificador="ngModel" placeholder="Informe"
+                                    minlength="3" maxlength="8" required appAutofocus>
+                            </div>
+
+                        </div>
+                    </form>
+                    <br>
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <!-- <div botoes>-->
+                            <button class="btn btn-raised btn-primary btn-lg w-100" type="button"
+                                (click)="assinarViaCodigo()">
+                                <!--<i class="fa fa-edit"></i>--> Assinar documento
+                            </button>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab label="Certificado local" *ngIf="assinaViaCertificadoDigital()">
+                    <div class="row">
+                        <div class="col-md-12 text-center blue-as pt-4 pb-4">Selecione o certificado digital no campo
+                            abaixo. Então,
+                            clique em <span class="primary" style="font-weight: 400;">ASSINAR DOCUMENTO</span> para
+                            realizar a
+                            assinatura.
+                        </div>
+                    </div>
+                    <div *ngIf="(assindorRodando && versaoAssinador );else AssinadorNaoEncontrado">
+
+                        <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y">
+                            <form class="form form-horizontal" #form="ngForm" (ngSubmit)="assinarViaCertificadoLocal()"
+                                autocomplete="off" novalidate>
+                                <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y">
+                                    <table class="table table-hover table-sm">
+                                        <thead class="thead-custom">
+                                            <tr>
+                                                <th width="33%">Cerficado
+                                                </th>
+                                                <th width="33%">Responsável
+                                                </th>
+                                                <th width="33%">Tipo
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let certificado of certificados"
+                                                [ngClass]="selecionarGrid(certificado)"
+                                                (click)="selecionarLinha(certificado)">
+                                                <td>{{certificado.nome | uppercase}}</td>
+                                                <td>{{certificado.responsavelNome | uppercase}} -
+                                                    {{certificado.responsavelCpf}}
+                                                </td>
+                                                <td>{{certificado.tipoCertificadoAN | uppercase}}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tr *ngIf="!certificados.length">
+                                            <td colspan="3">Pesquisando certificados</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </form>
+                            <br>
+                        </div>
+                        <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                            {{ message.text }}
+                        </ngb-alert>
+                        <div botoes>
+                            <button class="btn btn-raised btn-primary w-100 btn-lg" type="button"
+                                (click)="assinarViaCertificadoLocal()" [disabled]="!aliasCertificado">
+                                <!--<i class="fa fa-edit"></i>--> Assinar documento
+                            </button>
+                        </div>
+
+                    </div>
+                    <ng-template #AssinadorNaoEncontrado>
+                        <div class="box-green mb-4 p-2">
+
+                            <div *ngIf="versaoAssinador;else AssinadorDesatualizado">
+                                <label class="labelMensagem">
+                                    Não foram encontradas informações de certificados locais em seu
+                                    dispositivo.</label><br><br>
+                                <label class="labelMensagem">Verifique se nosso assinador está instalado. Para instá-lo,
+                                    <a href="{{urlDownloadAssinador}}" target="_blank"
+                                        class="control-label primary">clique
+                                        aqui</a>
+                                    , faça o download e execute o programa.</label>
+                            </div>
+                            <ng-template #AssinadorDesatualizado>
+                                <label class="labelMensagem">
+                                    Seu assinador está desatualizado! Versão Instalada: {{versaoAssinadorInstalada}} -> Versão Atual: {{versaoAssinadorAtual}}.</label><br><br>
+                                <label class="labelMensagem">Para atualizá-lo,
+                                    <a href="{{urlDownloadAssinador}}" target="_blank"
+                                        class="control-label primary">clique
+                                        aqui</a>
+                                    , faça o download e execute o programa.</label>
+                            </ng-template>
+                            <br>
+                            <br>
+                            <label class="labelMensagem">Após a instalação clique abaixo para listar os
+                                certificados</label>
+                        </div>
+                        <div>
+
+                            <button class="btn btn-raised btn-blue-as w-100 btn-lg" type="button"
+                                (click)="buscaCertificadosLocal()">
+                                <!--<i class="fa fa-edit"></i>--> Listar certificados
+                            </button>
+                        </div>
+
+                    </ng-template>
+                </mat-tab>
+
+            </mat-tab-group>
+        </app-modal-simples>
+    </div>
+</form>

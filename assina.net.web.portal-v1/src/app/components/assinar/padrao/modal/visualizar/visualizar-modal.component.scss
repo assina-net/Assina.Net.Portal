@@ -1,0 +1,51 @@
+@import "../../../../../../assets/sass/modal.scss";
+ul,
+li {
+  list-style-type: none;
+  margin: 0;
+}
+
+.semBorda{  
+  padding: 0px;
+  background-color:  transparent;
+  border: none;
+  outline:none;
+  height: 24px;
+}
+
+
+
+.div-assinaturas{
+  float: left;
+  top: 0;
+  height: 70vh;
+  overflow-y: auto;
+}
+
+.div-documento{  
+  height: 70vh;
+}
+
+.mat-tree-node{
+  min-height: 29px;
+}
+.mat-form-field {
+  margin-right: 4px;
+}
+
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}

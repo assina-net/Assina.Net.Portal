@@ -1,0 +1,13 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" novalidate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Termos > Aceite > Visualizar'" >
+            <label class="control-label">{{termo.nome}}</label>       
+            <div>                
+                <div class="div-documento" >
+                    <pdf-viewer src="{{termo.documento}}" original-size="true" show-all="false" [autoresize]="true"
+                        [fit-to-page]='true' [render-text]='false'></pdf-viewer>
+                </div>
+            </div>
+        </app-modal-simples>
+    </div>
+</form>

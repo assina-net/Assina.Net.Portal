@@ -1,0 +1,36 @@
+<form #form="ngForm" autocomplete="off" class="form form-horizontal" novalidate>
+    <div class="form-body">
+
+        <app-modal-simples [titulo]="'Assinaturas > Cancelar'">
+
+            <form #form="ngForm" (ngSubmit)="cancelarDocumento()" autocomplete="off" class="form form-horizontal"
+                novalidate>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label" for="inputCodigo">Informe o motivo do cancelamento</label>
+
+                        <textarea #identificador="ngModel" [(ngModel)]="motivoCancelamento" appAutofocus
+                            [ngStyle]="classUpperCase()" class="form-control" id="inputCodigo" rows="10"
+                            #motivo="ngModel" name="inputCodigo" placeholder="Informe o motivo do cancelamento" required
+                            type="text">
+                        </textarea>
+                        <small class="form-text text-muted danger"
+                            *ngIf="motivo.errors?.required && (motivo.dirty || motivo.touched)">Informe
+                            o Motivo
+                        </small>
+                    </div>
+                </div>
+            </form>
+
+            <ngb-alert (close)="message = null" *ngIf="message" type="{{message.type}}">
+                {{ message.text }}
+            </ngb-alert>
+            <div botoes>
+                <button (click)="cancelarDocumento()" class="btn btn-raised btn-danger" type="button">
+                    <!--<i class="fa fa-edit"></i>--> Cancelar Documento
+                </button>
+            </div>
+        </app-modal-simples>
+
+    </div>
+</form>

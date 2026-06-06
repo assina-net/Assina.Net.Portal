@@ -1,0 +1,89 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" novalidate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Cadastro > Contrato > Documentos'" [item]="documento" [form]="form">
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div style="display:flex;height: 35px;">
+                        <label for="inputTipoDocumento" class="control-label">Tipo de Documento</label>
+                        <a class="nav-link position-relative" ngbTooltip="Incluir novo tipo de documento para assinatura"                        
+                            *ngIf="perfilUsuarioAdmin()" (click)="incluirTipoDocumento()">
+                            <i class="ft-plus-circle font-medium-3" style="color: #3f51b5"></i>
+                        </a>
+                    </div>
+                    <select [(ngModel)]="tela.tipoDocumento" class="form-control" name="tipoDocumento"
+                        [ngStyle]="classUpperCase()" id="inputTipoDocumento" (ngModelChange)="tipoDocumentoChange()"
+                        #tipoDocumento="ngModel">
+                        <option value="" disabled>Selecione</option>
+                        <option *ngFor="let tipoDocumento of tipoDocumentoList" [value]="tipoDocumento.item_id">
+                            {{tipoDocumento.item_text}}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <div style="display:flex;height: 35px;">
+                        <label class="control-label">Parte Contrato</label>
+                        <a class="nav-link position-relative" ngbTooltip="Incluir novo papel"
+                            *ngIf="perfilUsuarioAdmin()" [class.disabled]="disableAddPapel()" (click)="incluirPapel()">
+                            <i class="ft-plus-circle font-medium-3" style="color: #3f51b5"></i>
+                        </a>
+                    </div>
+                    <ng-multiselect-dropdown *ngIf="dropdownList" [disabled]="true" [ngStyle]="classUpperCase()"
+                        name="parteContrato" id="inputparteContrato" [placeholder]="'Assinar como ...'"
+                        [data]="dropdownList" [(ngModel)]="tela.papel" [settings]="dropdownSettings">
+                    </ng-multiselect-dropdown>
+                </div>
+
+
+
+            </div>
+
+            <div class="row">
+
+                <!-- UPLOAD PDF -->
+                <div class="col-md-2">
+                    <label for="documento" class="control-label">Documento</label>
+                    <span id="documento" class="btn btn-raised btn-success btn-file form-control mb-0">
+                        <!-- <i class="ft ft-paperclip"></i> -->Selecionar
+                        <input class="form-control" type="file" id="idFile" accept=".pdf" maxlength="200000" multiple
+                            [ngStyle]="classUpperCase()" (change)="uploadArquivo($event)" title=" "
+                            [disabled]="liberadoUpload" />
+                    </span>
+                </div>
+                <div class="col-md-12">
+                    <table class="table mb-0" *ngIf="true">
+                        <tbody [ngStyle]="classUpperCase()">
+                            <tr *ngFor="let arquivo of documento">
+                                <td style="padding: 0; width:20px">
+                                    <a class="btn btn-danger btn-flat mb-0 p-1" placement="top" ngbTooltip="Remover"
+                                        (click)="remover(arquivo)">
+                                        <i class="fa fa-times-circle font-medium-4"></i>
+                                    </a>
+                                </td>
+                                <td style="padding: 0">
+                                    <small class="form-text text-muted">{{arquivo.nomeDocumento}}</small>
+                                </td>
+                                <td style="padding: 0">
+                                    <small class="form-text text-muted">{{arquivo.tipoDocumento.nome}}</small>
+                                </td>
+                                <td>
+                                    <div *ngFor="let papel of arquivo.papel" style="display: inline-table">
+                                        <span style="display: inline-flex;font-size: x-small;">
+                                            <span style="margin-left:5px">{{papel.papel.nome}}</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+        </app-modal-simples>
+    </div>
+</form>

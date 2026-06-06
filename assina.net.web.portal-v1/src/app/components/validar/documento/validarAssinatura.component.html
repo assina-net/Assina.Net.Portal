@@ -1,0 +1,57 @@
+<div class="sidebar-header col-md-12" style="margin-bottom: 15px; background: #0b2238;height: 60px;">
+    <div class=" row">
+        <div class="logo clearfix d-block col-sm-12 col-md-12 col-lg-2 col-xl-2">
+            <div style="margin-left: 10px; margin-top: 5px;">
+                <img class="logo-img" src="assets/img/assina.net-logobranco.png" />
+            </div>
+        </div>
+        <!-- <div class="text-center col-md-6 content-header" style="color: white;">
+            <div>Validar Documento</div>
+        </div> -->
+        <div class="text-center col-sm-12 col-md-12 col-lg-10 col-xl-10 content-header">
+            <form class="form form-horizontal" #form="ngForm" (ngSubmit)="validarDocumento()" autocomplete="off"
+                style="position: absolute; top: 0px; left: 0px; width: 100%;z-index: 100; ">
+                <div class="form-body">
+                    <div id="divForm" class="row">
+                        <div class="col-sm-12 col-lg-3 col-xl-2"></div>
+                        <div class="col-sm-12 col-lg-5 col-xl-4">
+                            <div class="col-12 labelInfo">Digite o código do documento a ser validado</div>
+
+                            <input type="text" [(ngModel)]="numeroDocumento" name="identificador" class="form-control"
+                                id="inputIdentificador" #identificador="ngModel" placeholder="Informe" upperCase
+                                minlength="3" maxlength="255" required appAutofocus>
+
+                            <small class="form-text text-muted danger"
+                                *ngIf="identificador.errors?.required && (identificador.dirty || identificador.touched)">Informe
+                                o Identificador
+                            </small>
+
+                            <small class="form-text text-muted danger"
+                                *ngIf="identificador.errors?.minlength && (identificador.dirty || identificador.touched)">Informe
+                                no mínimo 3 carateres
+                            </small>
+                        </div>
+
+                        <div class="col-sm-12 col-lg-2 col-xl-2">
+                            <button class="btn btn-lg btn-raised btn-primary btn-verificar" type="button"
+                                (click)="validarDocumento()">
+                                Validar documento
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3" style="color: white;">
+        </div>
+    </div>
+</div>
+<img src="../../../assets/img/tela-inicial/tela-base.png" class="w-100 desktop blur3" />
+<img src="../../../assets/img/tela-inicial/tela-base-mobile.png" class="w-100 mt-3 mobile blur3" />
+
+<div style="position: absolute; top: 0px; left: 0px; width: 100%; ">
+    <div class="form-body" style="height:80vh;position: relative; width: 60vw; margin-left: auto; margin-right: auto;">
+
+            <ng2-pdfjs-viewer #pdfViewer viewerId="inline" [print]="true"  [fullScreen]="true" [diagnosticLogs]=false [openFile]="false" [find]="false"></ng2-pdfjs-viewer>
+
+</div>

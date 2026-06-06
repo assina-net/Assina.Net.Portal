@@ -1,0 +1,56 @@
+.padd {
+  padding: 30px 16px 0 12px;
+}
+
+.pdf-label {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.input-file {
+  display: none;
+}
+
+.pdfView {
+  width: 100%;
+  height: fit-content;
+  border: 5px solid black;
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  border: 10px solid transparent;
+}
+
+.input-descricao div{
+  width: 500px;
+}
+
+.input-descricao{
+  padding-top: 5px;
+}
+
+.alinha{
+  margin-top: 25px;
+}
+
+.sw-fixed-width {
+  width: 90px;
+  min-width: 90px;
+}
+
+.wrapper {
+  margin: 16px 0;
+  padding: 8px;
+}
+
+.wrapper .row {
+  margin-bottom: 8px;
+}
+
+.m-input {
+  margin: 8px 0;
+}

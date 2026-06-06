@@ -1,0 +1,64 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form autocomplete="off" class="form form-horizontal">
+
+        <div>
+            <combo-pessoa-cliente (clienteChangeEvent)="clienteChange()" [somentePerfilAdministrador]="true"
+                [mostrarSistema]="true">
+            </combo-pessoa-cliente>
+        </div>
+        <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y rounded  infinite-scroll"
+            infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()"
+            [fromRoot]="true" [infiniteScrollContainer]="'.infinite-scroll'">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+                        <th width="33%"><a sortable-column="nome" sort-direction="ASC">Nome</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.nome"
+                                [ngStyle]="classUpperCase()" name="nome" class="form-control" id="tipoDocumento"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="33%" *ngIf="perfilUsuarioAdmin()"><a sortable-column="assina">Identificação</a>
+                            <input type="text" [(ngModel)]="filtro.identificacao" name="identificacao"
+                                class="form-control" [ngStyle]="classUpperCase()" id="identificacao"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="33%" style="vertical-align:top;"  *ngIf="perfilUsuarioAdmin()">
+                            Tipos de clientes
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody [ngStyle]="classUpperCase()">
+                    <tr *ngFor="let papel of listagem" (click)="selecionarLinha(papel)" [ngClass]="legendaGrid(papel)"
+                        (dblclick)="editar(false)">
+                        <td>{{papel.nome}}</td>
+                        <td *ngIf="perfilUsuarioAdmin()">{{papel.identificacao}}</td>
+                        <td  *ngIf="perfilUsuarioAdmin()">
+                            <span *ngIf="papel.papelTipoClientes.length>0">
+                                <div *ngFor="let tipoCliente of papel.papelTipoClientes; let i = index"
+                                    style="display: inline-table">
+                                    <span style="display: inline-flex;font-size: x-small;">
+                                        <span style="margin-left:5px">{{tipoCliente.segmento.nome}}</span>
+                                        <span style="margin-left:5px" *ngIf="i < papel.papelTipoClientes.length -1 "> -
+                                        </span>
+                                    </span>
+                                </div>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!listagem.length">
+                        <td colspan="2">Nenhum registro encontrado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-12 text-right">
+            <app-botoes-lista [permiteIncluir]="true" [permiteExcluir]="true" (incluirEvent)="incluir()"
+                (editarEvent)="editar()" (excluirEvent)="excluir()" [selecionado]="!objetoSelecionado">
+            </app-botoes-lista>
+        </div>
+        <!--<div class="box-footer clearfix">
+            <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>
+        </div>-->
+    </form>
+</app-form-simples>

@@ -1,0 +1,58 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" id="formGroup" novalidate
+    [ngStyle]="classUpperCase()">
+    <div class="form-body">
+        <app-modal-simples [titulo]="titulo" [item]="telefoneEdit" [form]="form"
+            (antesSalvarEvent)="antesSalvarEvent()">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="inputTipoTelefone" class="control-label">Tipo de Telefone</label>
+                    <select [(ngModel)]="telefoneEdit.tipoTelefone.id" class="form-control" name="tipoTelefone"
+                        id="inputTipoTelefone" [ngStyle]="classUpperCase()" ng-dropdown #tipoTelefone="ngModel"
+                        required>
+                        <option *ngFor="let itemTipoTelefone of tipoTelefoneList" [value]="itemTipoTelefone.item_id">
+                            {{itemTipoTelefone.item_text}}
+                        </option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="tipoTelefone.invalid && (tipoTelefone.dirty || tipoTelefone.touched)">Selecione
+                    </small>
+                </div>
+            </div>
+
+            <!-- <div class="row">
+                <div class="col-md-12">
+                    <label for="inputEndereco" class="control-label">Pais</label>
+                    <input type="text" [(ngModel)]="telefoneEdit.endereco" name="endereco" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputEndereco" maxlength="60" minlength="3" #endereco="ngModel"
+                        placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="endereco.errors?.required && (endereco.dirty || endereco.touched)">Informe o endereço
+                    </small>
+                </div>
+            </div> -->
+
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="inputNumero" class="control-label">Número</label>
+                    <input type="phone" [(ngModel)]="telefoneEdit.numero" name="numero" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputNumero" maxlength="11" minlength="10" #numero="ngModel"
+                        placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="numero.errors?.required && (numero.dirty || numero.touched)">Informe o Número
+                    </small>
+                </div>
+                <div class="col-md-5">
+                    <label for="inputComplemento" class="control-label">Complemento</label>
+                    <input type="text" [(ngModel)]="telefoneEdit.complemento" name="complemento"
+                        [ngStyle]="classUpperCase()" class="form-control" id="inputComplemento" maxlength="60"
+                        #complemento="ngModel" placeholder="Informe">
+                </div>
+            </div>
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+        </app-modal-simples>
+    </div>
+</form>

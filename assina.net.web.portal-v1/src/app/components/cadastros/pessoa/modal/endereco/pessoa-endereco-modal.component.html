@@ -1,0 +1,105 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" id="formGroup" novalidate
+    [ngStyle]="classUpperCase()">
+    <div class="form-body">
+        <app-modal-simples [titulo]="titulo" [item]="enderecoEdit" [form]="form"
+            (antesSalvarEvent)="antesSalvarEvent()">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputTipoEndereco" class="control-label">Tipo de Endereco</label>
+                    <select [(ngModel)]="enderecoEdit.tipoEndereco.id" class="form-control" name="tipoEndereco"
+                        id="inputTipoEndereco" [ngStyle]="classUpperCase()" ng-dropdown #tipoEndereco="ngModel"
+                        required>
+                        <option *ngFor="let itemTipoEndereco of tipoEnderecoList" [value]="itemTipoEndereco.item_id">
+                            {{itemTipoEndereco.item_text}}
+                        </option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="tipoEndereco.invalid && (tipoEndereco.dirty || tipoEndereco.touched)">Selecione
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputCep" class="control-label">CEP</label>
+                    <input type="text" [(ngModel)]="enderecoEdit.cep" name="cep" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputCep" maxlength="60" minlength="3" #cep="ngModel"
+                        (change)="cepChange()" placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="cep.errors?.required && (cep.dirty || cep.touched)">Informe o Cep
+                    </small>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="inputEndereco" class="control-label">Endereço</label>
+                    <input type="text" [(ngModel)]="enderecoEdit.endereco" name="endereco" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputEndereco" maxlength="60" minlength="3" #endereco="ngModel"
+                        placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="endereco.errors?.required && (endereco.dirty || endereco.touched)">Informe o endereço
+                    </small>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="inputNumero" class="control-label">Número</label>
+                    <input type="text" [(ngModel)]="enderecoEdit.numero" name="numero" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputNumero" maxlength="60" #numero="ngModel" placeholder="Informe"
+                        required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="numero.errors?.required && (numero.dirty || numero.touched)">Informe o Número
+                    </small>
+                </div>
+                <div class="col-md-8">
+                    <label for="inputComplemento" class="control-label">Complemento</label>
+                    <input type="text" [(ngModel)]="enderecoEdit.complemento" name="complemento"
+                        [ngStyle]="classUpperCase()" class="form-control" id="inputComplemento" maxlength="60"
+                        minlength="3" #complemento="ngModel" placeholder="Informe">
+                    <small class="form-text text-muted danger"
+                        *ngIf="complemento.errors?.required && (complemento.dirty || complemento.touched)">Informe o
+                        Complemento
+                    </small>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="inputBairro" class="control-label">Bairro</label>
+                    <input type="text" [(ngModel)]="enderecoEdit.bairro" name="bairro" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputBairro" maxlength="60" minlength="3" #bairro="ngModel"
+                        placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="bairro.errors?.required && (bairro.dirty || bairro.touched)">Informe o bairro
+                    </small>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="inputMunicipio" class="control-label">Município</label>
+                    <input type="text" [(ngModel)]="enderecoEdit.municipio" name="municipio"
+                        [ngStyle]="classUpperCase()" class="form-control" id="inputMunicipio" maxlength="60"
+                        minlength="3" #municipio="ngModel" placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="municipio.errors?.required && (municipio.dirty || municipio.touched)">Informe o
+                        Município
+                    </small>
+                </div>
+                <div class="col-md-2">
+                    <label for="inputEstado" class="control-label">Estado</label>
+                    <input type="text" [(ngModel)]="enderecoEdit.estado" name="estado" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputEstado" maxlength="2" minlength="2" #estado="ngModel"
+                        placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="estado.errors?.required && (estado.dirty || estado.touched)">Informe o Estado
+                    </small>
+                </div>
+            </div>
+
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+        </app-modal-simples>
+    </div>
+</form>

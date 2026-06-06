@@ -1,0 +1,121 @@
+
+
+.form-body {
+
+
+}
+
+.control-label {
+   margin-top: .5rem;
+   margin-bottom: 0;
+}
+
+.label-radio-check {
+   font-size: 1rem;
+   font-weight: normal;
+   margin: 6px 0;
+   text-transform: none;
+}
+
+:host ::ng-deep .ng-select-container {
+   border-color: inherit;
+}
+
+:host ::ng-deep .switch100>span.switch {
+   width: 100%;
+}
+
+:host ::ng-deep .linhaSelecionada {
+   background-color: #cde;
+}
+
+.sw-input-group {
+   margin-bottom: 0;
+
+   input {
+      border-right-style: none;
+   }
+
+   .input-group-btn {
+      z-index: 2;
+
+      button {
+         border-top-left-radius: 0;
+         border-bottom-left-radius: 0;
+         margin-left: -1px;
+      }
+
+      button[disabled] {
+         pointer-events: none;
+      }
+   }
+}
+
+.btn.btn-file {
+   position: relative;
+   overflow: hidden;
+
+   input[type='file'] {
+      position: absolute;
+      top: 0;
+      right: 0;
+      min-width: 100%;
+      min-height: 100%;
+      font-size: 100px;
+      text-align: right;
+      opacity: 0;
+      filter: alpha(opacity=0);
+      outline: none;
+      background: white;
+      cursor: inherit;
+      display: block;
+   }
+}
+
+:host ::ng-deep button[disabled] {
+   cursor: not-allowed;
+}
+
+:host ::ng-deep .table-wrapper-scroll-x {
+   display: block;
+   max-width: auto;
+   margin: 0 auto;
+   overflow-x: auto;
+   -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+:host ::ng-deep .table-fixed {
+   table-layout: fixed;
+}
+
+:host ::ng-deep .table-wrapper-scroll-y {
+   max-height: 300px;
+   min-height: 200px;
+   overflow-y: auto;
+}
+
+:host ::ng-deep .alert-custom .alert {
+   margin-bottom: 0.25em;
+}
+
+:host ::ng-deep ngb-rating .star {
+   font-size: 1.5rem;
+   color: #b0c4de;
+
+   // Filled Star
+   &.filled {
+      color: gold;
+   }
+}
+
+table td {
+   padding: 0.4rem;
+   vertical-align: middle;
+}
+
+:host ::ng-deep .ng-select.ng-select-single .ng-select-container {
+   max-height: 32px;
+   min-height: 32px;
+}
+
+

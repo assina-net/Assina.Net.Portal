@@ -1,0 +1,11 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" novalidate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Assinar > Documento > Visualizar'">
+
+            <label class="control-label">{{documento.nomeDocumento}}</label>
+            <div style="height:500px">
+                <ng2-pdfjs-viewer #pdfViewer viewerId="inline" [print]="true"  [fullScreen]="true" [diagnosticLogs]=false [openFile]="false" [find]="false"></ng2-pdfjs-viewer>
+            </div>
+        </app-modal-simples>
+    </div>
+</form>

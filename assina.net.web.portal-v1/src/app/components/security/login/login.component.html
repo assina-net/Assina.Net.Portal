@@ -1,0 +1,71 @@
+<div class="background-wrapper">
+    <div class="background">
+
+    </div>
+</div>
+<main class="login-wrapper">
+    <div class="middle-aligment-flex row no-gutters">
+        <div class="login-image_wrapper op0 col-12 col-md-6">
+            <img class="desktop" src="assets/img/logos/t-login-logo.png">
+            <img class="mobile" style="width: auto;" src="assets/img/assina.net-logobranco.png">
+
+        </div>
+        <form class="form-signin op col-12 col-md-4" #form="ngForm" autocomplete="off" (ngSubmit)="logar()">
+            <h1 class="title">Bem-vindo</h1>
+
+            <p class="signin">
+                Acesse sua conta
+            </p>
+
+            <div class="input-wrapper">
+                <input type="text" [(ngModel)]="usuario.login" name="login" class="form-control" id="inputLogin"
+                    #login="ngModel" placeholder="Usuário" style="text-transform:uppercase" autofocus>
+
+                <i class="ft-user"></i>
+            </div>
+            <div class="input-wrapper">
+                <input type="password" [(ngModel)]="usuario.senha" name="senha" class="form-control" id="inputPassword"
+                    placeholder="Senha" #senha="ngModel">
+
+                <i class="ft-lock"></i>
+            </div>
+
+            <button class="button-signin w100" style="margin-bottom: 20px;" type="submit"
+                [disabled]="descBtnEntrar != 'Entrar'">{{descBtnEntrar}}
+            </button>
+
+            <div>
+                <a class="signin" (click)="lostPassword()">
+                    <span class="primary">Esqueceu a senha ? Clique aqui.</span>
+                </a>
+            </div>
+
+            <ngb-alert type="info" [dismissible]="false" *ngIf="message">
+                <strong>Login ou senha inválidos</strong>
+            </ngb-alert>
+
+            <br>
+
+            <div>
+                <a class="signin" (click)="newCliente()">
+                    <span class="primary">Ainda não é cliente ? Clique aqui.</span>
+                </a>
+            </div>
+            
+            <br>
+
+            <div>
+                <a class="signin" (click)="documentValidation()">
+                    <span class="primary">Clique aqui para validar um documento.</span>
+                </a>
+            </div>
+
+            <!--<a class="signin" (click)="lostPassword()" *ngIf="message">
+                <span>Esqueceu a senha ? Clique aqui para redefinir a senha.</span>
+            </a>-->
+
+
+
+        </form>
+    </div>
+</main>

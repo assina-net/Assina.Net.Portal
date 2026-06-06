@@ -1,0 +1,223 @@
+/* .section {
+  min-height: 89.3%;
+} */
+
+/*:host ::ng-deep .table .thead-custom th {
+ background-color: #ffffff !important;
+}*/
+
+:host ::ng-deep .font-family-rubik {
+   font-family: 'Rubik', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.sw-spiner ::ng-deep .black-overlay {
+   position: fixed;
+}
+
+/*.sw-spiner ::ng-deep .loading-text {
+   position: fixed;
+}*/
+
+:host ::ng-deep .progress {
+   height: 1.5rem;
+}
+
+:host ::ng-deep .ng-select-container {
+   border-color: inherit;
+}
+
+:host ::ng-deep .linhaSelecionada {
+   background-color: #cde;
+}
+
+:host ::ng-deep .linhaSelecionada2 {
+   background-color: silver;
+}
+
+:host ::ng-deep .content-header {
+   margin-top: 0.5rem;
+
+}
+
+:host ::ng-deep .content-sub-header {
+   margin-bottom: 0.25rem;
+}
+
+:host ::ng-deep .content-form .card {
+   margin: 0;
+}
+
+:host ::ng-deep .content-form .card .card-block {
+   padding: 0.5rem;
+}
+
+:host ::ng-deep .content-form .form-actions {
+   margin-top: 10px;
+   padding: 20px 0 0;
+}
+
+:host ::ng-deep .page-link {
+   line-height: 1rem;
+}
+
+:host ::ng-deep .btn-orange {
+   background-color: #FDD835;
+   color: white;
+}
+
+:host ::ng-deep th[sortable-column] {
+   cursor: pointer;
+}
+
+:host ::ng-deep .switch100>span.switch {
+   width: 100%;
+}
+:host ::ng-deep.switch.checked {
+   background: #34b563!important;}
+
+:host ::ng-deep.switch.switch-medium {
+   background: #bf2025;
+   color:#fff;
+   height: 20px;
+   border-radius: 20px;
+}
+:host ::ng-deep.switch.switch-medium small {
+   width: 20px;
+   height: 20px;
+   }
+
+   :host ::ng-deep.switch.switch-medium > .switch-pane > span {
+      font-size: 14px;
+      line-height: 20px;}
+
+:host ::ng-deep .control-label {
+   margin-top: .5rem;
+   margin-bottom: 0;
+}
+
+:host ::ng-deep .table-wrapper-scroll-x {
+   display: block;
+   max-width: auto;
+   margin: 0 auto;
+   overflow-x: auto;
+   -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+:host ::ng-deep .table-fixed {
+   table-layout: fixed;
+}
+
+:host ::ng-deep .table-wrapper-scroll-y {
+   max-height: 300px;
+   min-height: 280px;
+   overflow-y: auto;
+}
+
+:host ::ng-deep .table-wrapper-scroll-yy {
+   max-height: 138px;
+   overflow-y: overlay;
+}
+
+:host ::ng-deep table th {
+   border:none;
+   color:#595959;
+   font-weight: normal;
+   font-size: 1.1rem;
+   position: sticky;
+   text-align:center;
+   background: #f7f7f7;
+   border-bottom: 1px solid #a6a9ae;
+   padding: 1.2rem 0.45rem;
+   border-collapse: collapse;
+   top: 0;
+}
+
+:host ::ng-deep .btn.btn-file {
+   position: relative;
+   overflow: hidden;
+}
+
+:host ::ng-deep .btn.btn-file>input[type='file'] {
+   position: absolute;
+   top: 0;
+   right: 0;
+   min-width: 100%;
+   min-height: 100%;
+   font-size: 100px;
+   text-align: right;
+   opacity: 0;
+   filter: alpha(opacity=0);
+   outline: none;
+   background: white;
+   cursor: inherit;
+   display: block;
+}
+
+:host ::ng-deep .table td {
+   border-top:none;
+   padding: 0.45rem;
+   vertical-align: middle;
+}
+
+:host ::ng-deep app-complete-tab-form .table td {
+   padding: 0.4rem;
+   vertical-align: middle;
+}
+
+:host ::ng-deep .table tbody td span {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   display: block;
+}
+
+:host ::ng-deep .table thead {
+   background:#f7f7f7;
+ }
+
+:host ::ng-deep .card-fullscreen {
+   padding: 20px 0;
+  /* background-color: #f5f7fa;*/
+   display: block;
+   z-index: 9999;
+   position: fixed;
+   width: 100% !important;
+   height: 100% !important;
+   top: 0;
+   right: 0;
+   left: 0;
+   bottom: 0;
+   overflow: auto;
+}
+
+:host ::ng-deep .label-radio-check {
+   font-size: 1rem;
+   font-weight: normal;
+   margin: 6px 0;
+   text-transform: none;
+}
+
+:host ::ng-deep button[disabled] {
+   cursor: not-allowed;
+}
+
+:host ::ng-deep .readonlyDiv {
+   pointer-events: none;
+   opacity: 0.6;
+}
+
+:host ::ng-deep .ng-select.ng-select-single .ng-select-container {
+   max-height: 32px;
+   min-height: 32px;
+}
+
+:host ::ng-deep .table-border-style {
+   border-bottom: #a6a9ae 1px solid;
+   border-radius: 0.25rem;
+   border-collapse: collapse;
+}
+
+
+::ng-deep .mat-tab-body-content {
+  overflow: visible !important;
+}

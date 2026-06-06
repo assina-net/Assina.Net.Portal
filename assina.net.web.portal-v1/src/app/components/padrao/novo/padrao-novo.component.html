@@ -1,0 +1,43 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota">
+    <form class="form form-horizontal" #form="ngForm" autocomplete="off" (ngSubmit)="salvar()" novalidate>
+        <div class="form-body">
+            <h4 class="form-section mb-1">
+                <div *ngIf="!editando && !consultando"><i class="fa fa-plus"></i> Novo cadastro</div>
+                <div *ngIf="editando && !consultando"><i class="fa fa-edit"></i> Editando cadastro</div>
+                <div *ngIf="consultando"><i class="fa fa-eye"></i> Consultando cadastro</div>
+            </h4>
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="inputNr" class="control-label">Código</label>
+                    <input type="text" [(ngModel)]="entidade.numero" name="numero" class="form-control" id="inputNr"
+                        #numero="ngModel" placeholder="" disabled readonly>
+                </div>
+                <div class="col-md-8">
+                    <label for="inputDescricao" class="control-label">Descrição</label>
+                    <input type="text" [(ngModel)]="entidade.descricao" name="descricao" class="form-control"
+                        id="inputDescricao" #descricao="ngModel" placeholder="Informe" upperCase maxlength="60" required
+                        appAutofocus>
+                    <small class="form-text text-muted danger"
+                        *ngIf="descricao.errors?.required && (descricao.dirty || descricao.touched)">Informe a
+                        Descrição</small>
+                </div>
+                <div class="col-md-2">
+                    <label for="inputStatus" class="control-label">Status</label>
+                    <ui-switch id="inputStatus" checkedLabel="Ativo" uncheckedLabel="Inativo" defaultBgColor="red"
+                        [(ngModel)]="entidade.status" name="status" #status="ngModel" class="switch100"
+                        [disabled]="!editando">
+                    </ui-switch>
+                </div>
+            </div>
+            <br />
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+            <app-botoes-cadastro [editando]="editando" [podeVoltar]="podeVoltar" [consultando]="consultando"
+                (cancelarEvent)="cancelar()" (voltarEvent)="voltar()" (excluirEvent)="excluir()">
+            </app-botoes-cadastro>
+        </div>
+    </form>
+</app-form-simples>

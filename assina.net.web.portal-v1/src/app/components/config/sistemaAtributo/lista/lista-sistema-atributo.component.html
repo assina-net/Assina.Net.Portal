@@ -1,0 +1,83 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form autocomplete="off" class="form form-horizontal">
+
+        <div>
+            <combo-pessoa-cliente (clienteChangeEvent)="clienteChange()" [somentePerfilAdministrador]="true"
+                [mostrarSistema]="true">
+            </combo-pessoa-cliente>
+        </div>
+        <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y rounded  infinite-scroll" infiniteScroll
+        [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [fromRoot]="true"
+        [infiniteScrollContainer]="'.infinite-scroll'">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+                        <th width="350px"><a sortable-column="descricao" sort-direction="ASC">Parâmetro</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.descricao"
+                                [ngStyle]="classUpperCase()" name="descricao" class="form-control"
+                                id="descricao" placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="250px"><a sortable-column="valorAtributo">Valor</a>
+                            <input type="text" [(ngModel)]="filtro.valorAtributo" name="valorAtributo" class="form-control"
+                                [ngStyle]="classUpperCase()" id="valorAtributo" placeholder="Pesquisar..."
+                                (ngModelChange)="filtrando()">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody [ngStyle]="classUpperCase()">
+                    <tr *ngFor="let sistemaAtributo of listagem" (click)="selecionarLinha(sistemaAtributo)"
+                        [ngClass]="legendaGrid(sistemaAtributo)" (dblclick)="editar(false)">
+                        <td>{{sistemaAtributo.tipoAtributo.descricao}}</td>
+
+                        <td *ngIf="sistemaAtributo.valorAtributo == null">Não configurado</td>
+
+                        <td *ngIf="sistemaAtributo.valorAtributo != null && (
+                                sistemaAtributo.tipoAtributo.tipoValor == 'INTEGER' 
+                                || sistemaAtributo.tipoAtributo.tipoValor == 'TEXT_SIMPLE' )">
+                            {{sistemaAtributo.valorAtributo}}
+                        </td>
+                        <td *ngIf="sistemaAtributo.valorAtributo != null && 
+                                   sistemaAtributo.tipoAtributo.tipoValor == 'TEXT_HTML'">
+                            Conteúdo em HTML
+                        </td>
+
+                        <td *ngIf="sistemaAtributo.valorAtributo != null && 
+                                   sistemaAtributo.tipoAtributo.tipoValor == 'PDF'">
+                            Conteúdo em PDF
+                        </td>
+
+                        <td *ngIf="sistemaAtributo.valorAtributo != null && (
+                                   sistemaAtributo.tipoAtributo.tipoValor == 'DIASSEMANA'
+                                   || sistemaAtributo.tipoAtributo.tipoValor =='HORARIOS' )">
+                            <span *ngFor="let valor of getValores(sistemaAtributo.valorAtributo ) "
+                                style="display: inline-flex">
+                                <span style="margin-right:5px">{{valor.item_text}}</span>
+                            </span>
+                        </td>
+                        <td *ngIf="sistemaAtributo.valorAtributo == 'true' 
+                                && sistemaAtributo.tipoAtributo.tipoValor=='BOOLEAN'">
+                            <i class="ft-check-circle primary font-medium-3" ></i></td>
+                        <td *ngIf="sistemaAtributo.valorAtributo == 'false'
+                                && sistemaAtributo.tipoAtributo.tipoValor=='BOOLEAN'">
+                            <i class="ft-minus-circle danger font-medium-3" ></i></td>
+
+                    </tr>
+                    <tr *ngIf="!listagem.length">
+                        <td colspan="2">Nenhum registro encontrado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row m-2">
+            <div class="col-md-12 text-right clearfix">
+                <app-botoes-lista [permiteIncluir]="true" [permiteExcluir]="true"
+                    (incluirEvent)="incluir()" (editarEvent)="editar()" (excluirEvent)="excluir()"
+                    [selecionado]="!objetoSelecionado">
+                </app-botoes-lista>
+            </div>
+        </div>
+        <!--<div class="box-footer clearfix">
+            <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>
+        </div>-->
+    </form>
+</app-form-simples>

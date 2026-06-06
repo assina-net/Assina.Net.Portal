@@ -1,0 +1,319 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota">
+
+    <mat-tab-group dynamicHeight="true" disableRipple="true" class="m-4">
+
+        <mat-tab label="Cadastro">
+            <form class="form form-horizontal" #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" novalidate>
+                <div class="form-body">
+                    <h4 class="form-section mb-1 text-center">
+                        <div *ngIf="!editando && !consultando">
+                            <!--<i class="fa fa-plus"></i>--> Novo cadastro
+                        </div>
+                        <div *ngIf="editando && !consultando">
+                            <!--<i class="fa fa-edit"></i>--> Editando cadastro
+                        </div>
+                        <div *ngIf="consultando">
+                            <!--<i class="fa fa-eye"></i>--> Consultando cadastro
+                        </div>
+                    </h4>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="inputNome" class="control-label">Nome</label>
+                            <input type="text" [(ngModel)]="TipoDocumento.nome" name="inputNome" class="form-control"
+                                [ngStyle]="classUpperCase()" id="inputNome" #nome="ngModel" placeholder="Informe"
+                                minlength="3" maxlength="255" required>
+
+                            <small class="form-text text-muted danger"
+                                *ngIf="nome.errors?.required && (nome.dirty || nome.touched)">Informe
+                                o nome do tipo de documento
+                            </small>
+                            <small class="form-text text-muted danger"
+                                *ngIf="nome.errors?.minlength && (nome.dirty || nome.touched)">Informe
+                                no mínimo 3 carateres
+                            </small>
+
+                            <div *ngIf="perfilUsuarioAdmin()">
+                                <label for="inputIdentificacao" class="control-label">Identificação</label>
+                                <input type="text" [(ngModel)]="TipoDocumento.identificacao" name="inputIdentificacao"
+                                    [ngStyle]="classUpperCase()" class="form-control" id="inputIdentificacao"
+                                    #identificacao="ngModel" placeholder="Informe" minlength="3" maxlength="255"
+                                    required>
+                                <small class="form-text text-muted danger"
+                                    *ngIf="identificacao.errors?.required && (identificacao.dirty || identificacao.touched)">Informe
+                                    a Identificação
+                                </small>
+                                <small class="form-text text-muted danger"
+                                    *ngIf="identificacao.errors?.minlength && (identificacao.dirty || identificacao.touched)">Informe
+                                    no mínimo 3 carateres
+                                </small>
+                            </div>
+
+                            <div *ngIf="clienteSistema()" class="row">
+                                <label for="selTipoCliente" class="control-label">Tipo Cliente</label>
+
+                                <ng-multiselect-dropdown *ngIf="tipoClienteList" name="selTipoCliente"
+                                    id="selTipoCliente" [disabled]="consultando" [ngStyle]="classUpperCase()"
+                                    [placeholder]="'Para os clientes do tipo  ...'" [data]="tipoClienteList"
+                                    [(ngModel)]="tipoClienteSelecionandos" [settings]="dropdownSettings">
+                                </ng-multiselect-dropdown>
+                            </div>
+
+
+
+                            <div style="display:flex;">
+                                <label for="selPapel" class="control-label">Papeis que devem assinar </label>
+                                <a class="nav-link position-relative" ngbTooltip="Incluir novo papel"
+                                    *ngIf="!consultando" (click)="cadastrarNovoPapel()">
+                                    <i class="ft-plus-circle font-medium-3" style="color: #3f51b5"></i>
+                                </a>
+                            </div>
+
+                            <div>
+                                <div>
+                                    <br />
+                                    <app-complete-tab-form [dados]="tipoDocumentoPapeisModal" [cols]="titulosPapeis"
+                                        [content]="tipoDocumentoPapelForm"  (change)="adicionouPapel()"
+                                        [dadosComplementares]="dadosComplementaresPapel" [showButtons]="!clienteSistema()"
+                                        [permiteEditar]="true" [permiteIncluir]="true" [sizeExibir]="'lg'"
+                                        [permiteExcluir]="true" [novoRegistro]="'Novo Papel'"
+                                        [mensagemExclusao]="'Deseja excluir o papel ? '"
+                                        [itemTemplate]="detalheArquivo">
+                                        <ng-template #detalheArquivo let-item>
+                                            <td>{{item.papel.nome}}</td>
+                                            <td>
+                                                <i *ngIf="item.token" class="ft-check-circle primary font-medium-3"></i>
+                                                <i *ngIf="!item.token" class="ft-minus-circle danger font-medium-3"></i>
+                                            </td>
+                                            <td>
+                                                <i *ngIf="item.certificate" class="ft-check-circle primary font-medium-3"></i>
+                                                <i *ngIf="!item.certificate" class="ft-minus-circle danger font-medium-3"></i>
+                                            </td>
+                                        </ng-template>
+                                    </app-complete-tab-form>
+
+                                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                                        {{ message.text }}
+                                    </ngb-alert>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="col-md-6">
+                                <label for="inputAssina" class="control-label">Documento exige assinatura</label>
+                                <ui-switch [(ngModel)]="TipoDocumento.assina" name="inputNaoAssina" id="inputAssina"
+                                    [ngStyle]="classUpperCase()" #assina="ngModel" class="switch100" required
+                                    checkedLabel="Sim" uncheckedLabel="Não" [disabled]="!editando && !inserindo">
+                                </ui-switch>
+                                <small class="form-text text-muted danger"
+                                    *ngIf="assina.invalid && (assina.dirty || assina.touched)">Escolha o Não Assina
+                                </small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="inputValidacao" class="control-label">Permite validação online do
+                                    documento</label>
+                                <ui-switch [(ngModel)]="TipoDocumento.validacaoOnLine" name="inputValidacao"
+                                    id="inputValidacao" [ngStyle]="classUpperCase()" #qrCode="ngModel" class="switch100"
+                                    required checkedLabel="Sim" uncheckedLabel="Não"
+                                    [disabled]="!editando && !inserindo">
+                                </ui-switch>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="inputQRCode" class="control-label">Exibir qrcode de validação no
+                                    documento</label>
+                                <ui-switch [(ngModel)]="TipoDocumento.qrcode" name="inputQRCode" id="inputQRCode"
+                                    [ngStyle]="classUpperCase()" #qrCode="ngModel" class="switch100" required
+                                    checkedLabel="Sim" uncheckedLabel="Não" [disabled]="!editando && !inserindo">
+                                </ui-switch>
+                            </div>
+                        </div>
+                    </div>
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+
+
+                    <label *ngIf="consultando" for="inputAssina" class="control-label">Este é um tipo de documento
+                        padrão do
+                        sistema e não pode ser editado.</label>
+                    <div *ngIf="!clienteSistema()">
+                        <div>
+                            <br />
+                            <app-cadastro-parte-form [dados]="contratoParteModal"
+                                [contratoPapelList]="papelListCadastroParteDocumento()"
+                                [showButtons]="!clienteSistema()" (change)="adicionouContratoParte()"
+                                [tituloModal]="'Tipo Documento > Parte Padrão'" [statusContrato]="'ATIVO'">
+                            </app-cadastro-parte-form>
+
+                            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                                {{ message.text }}
+                            </ngb-alert>
+
+                        </div>
+                    </div>
+
+                    <div *ngIf="mostraObservador() && !clienteSistema()">
+                        <div>
+                            <br />
+                            <app-cadastro-parte-form [dados]="contratoObservadoresModal" [contratoPapelList]="[]"
+                                [showButtons]="!clienteSistema()" (change)="adicionouObservador()"
+                                [statusContrato]="'ATIVO'" [novoRegistro]="'Novo Observador'"
+                                [tipoCadastro]="'OBSERVADOR'"
+                                [mensagemExclusao]="'Deseja retirar esta parte para assinatura ? '">
+                            </app-cadastro-parte-form>
+
+                            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                                {{ message.text }}
+                            </ngb-alert>
+
+                        </div>
+                    </div>
+
+                    <app-botoes-cadastro [editando]="editando" [podeVoltar]="podeVoltar" [consultando]="false"
+                        (cancelarEvent)="cancelar()" (voltarEvent)="voltar()" (excluirEvent)="excluir()">
+                    </app-botoes-cadastro>
+                </div>
+            </form>
+        </mat-tab>
+
+        <mat-tab label="Posições Assinatura">
+            <div class="row" style="margin-bottom: 8px;">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-3 d-flex align-items-center alinha">
+                            <label class="btn btn-raised pdf-label btn-indigo">
+                                <input type="file" id="pdf" name="pdf" accept=".pdf" class="input-file"
+                                    (change)="onFileUploaded($event)">
+                                <i class="fa fa-file-pdf-o mr-1"></i> Abrir PDF</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-auto">
+                    <div class="pdfView" *ngIf="imgBase64">
+                        <image-cropper class="noselect" [cropper]="posicaoAtual.crooper" [imageBase64]="imgBase64"
+                            [cropperMinWidth]="0.1" [cropperMinHeight]="0.1" [initialStepSize]="1"
+                            (imageCropped)="imageCropped($event)" (cropperReady)="setInitialPosition()"
+                            [maintainAspectRatio]="false" format="jpg">
+                        </image-cropper>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <form #formPosicao="ngForm" class="form form-horizontal" autocomplete="off"
+                        (ngSubmit)="adicionaPosicao()" novalidate>
+                        <div class="form-body">
+                            <div class="row m-input" *ngIf="imgBase64">
+                                <div class="col-md-10" style="padding: 0;">
+                                    <div>
+                                        <span class="badge badge-secondary">
+                                            Selecione a posição da assinatura.
+                                        </span>
+                                    </div>
+                                    <label for="inputPapel" class="control-label">Papel</label>
+                                    <select [(ngModel)]="papelPosicaoId" class="form-control" name="papel"
+                                        [ngStyle]="classUpperCase()" [ngStyle]="classUpperCase()" id="inputPapel"
+                                        ng-dropdown #papel="ngModel">
+                                        <option *ngFor="let papeis of this.entidade.papeis" [value]="papeis.id">
+                                            {{papeis.papel.nome}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row m-input" *ngIf="imgBase64">
+                                <div class="col-md-3" style="padding: 0;">
+                                    <label class="control-label" for="inputX">Posição X</label>
+                                    <input #x="ngModel" [(ngModel)]="posicao.x" class="form-control" id="inputX"
+                                        name="x" type="number">
+                                </div>
+                                <div class="col-md-3" style="padding: 0;">
+                                    <label class="control-label" for="inputY">Posição Y</label>
+                                    <input #y="ngModel" [(ngModel)]="posicao.y" class="form-control" id="inputY"
+                                        name="y" type="number">
+                                </div>
+                                <div class="col-md-3" style="padding: 0;">
+                                    <label class="control-label" for="width">Width</label>
+                                    <input #width="ngModel" [(ngModel)]="posicao.width" class="form-control" id="width"
+                                        name="width" type="number">
+                                </div>
+                                <div class="col-md-3" style="padding: 0;">
+                                    <label class="control-label" for="inputheight">Height</label>
+                                    <input #height="ngModel" [(ngModel)]="posicao.height" class="form-control"
+                                        id="inputheight" name="height" type="number">
+                                </div>
+                            </div>
+                            <h4 class="form-section mb-0" *ngIf="imgBase64">
+                                <div class="btn-group btn-group-justified btn-group-raised">
+                                    <button class="btn btn-raised btn-indigo mr-2" type="button"
+                                        (click)="adicionaPosicao()">
+                                        <i class="fa fa-plus"></i> Adicionar
+                                    </button>
+                                </div>
+                                <div>
+                                    <button [disabled]="!isPreviousPage" class="btn btn-raised btn-indigo mr-2"
+                                        type="button" (click)="previousImage()">
+                                        <i class="fa fa-solid fa-angle-left"></i> Pagina Anterior
+                                    </button>
+                                    <button [disabled]="!isNextPage" class="btn btn-raised btn-indigo mr-2"
+                                        type="button" (click)="nextImage()">
+                                        <i class="fa fa-solid fa-angle-right"></i> Prox. Pagina
+                                    </button>
+                                    <button [disabled]="!isLastPageEnabled" class="btn btn-raised btn-indigo mr-2"
+                                        type="button" (click)="lastPage()">
+                                        <i class="fa fa-solid fa-arrow-right"></i> Última Pagina
+                                    </button>
+                                    <button [disabled]="!isAllPageEnabled" class="btn btn-raised btn-indigo mr-2"
+                                        type="button" (click)="allPage()">
+                                        <i class="fa fa-solid fa-arrow-right-to-bracket"></i> Todas Paginas
+                                    </button>
+                                </div>
+                            </h4>
+                            <div class="table-responsive table-wrapper-scroll-x mb-0">
+                                <table sortable-table class="table mb-0" *ngIf="true">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th class="p-1" *ngFor="let c of colsPosicao; let i = index"
+                                                [ngClass]="{'sw-fixed-width': i == 0}">
+                                                {{ c }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody *ngIf="!entidade">
+                                        <tr *ngFor="let item of entidade.posicoesAssinatura; let i = index"
+                                            (click)="selecionaAssinatura(item)">
+                                            <td style="padding: 0">
+                                                <a class="btn btn-danger btn-flat mb-0 p-1" placement="top"
+                                                    ngbTooltip="Excluir" (click)="excluirPosicao(item)">
+                                                    <i class="fa fa-times-circle font-medium-4"></i>
+                                                </a>
+                                            </td>
+                                            <td>{{ item.papel.papel.nome }}</td>
+                                            <td>{{ item.x }}</td>
+                                            <td>{{ item.y }}</td>
+                                            <td>{{ item.width }}</td>
+                                            <td>{{ item.height }}</td>
+                                            <td>{{ (item.pagina==-1)?'Última':(item.pagina==0)?'Todas':item.pagina }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tr *ngIf="!entidade || !entidade.posicoesAssinatura || entidade.posicoesAssinatura.length == 0">
+                                        <td [colSpan]="colspan">Nenhuma posição registrada</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </mat-tab>
+
+    </mat-tab-group>
+
+</app-form-simples>

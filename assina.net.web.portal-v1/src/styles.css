@@ -1,0 +1,52 @@
+/* You can add global styles vo this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
+@import '~@angular/material/prebuilt-themes/purple-green.css';
+
+@import "~ng-pick-datetime/assets/style/picker.min.css";
+.alert-info{color:red;}
+.modal-content{background: #f7f7f7!important; border-radius: 2rem!important; border: 2px solid #34b563!important;}
+
+.table-style1 thead th {background-color: #e6e6e6!important;
+    border: #a6a6a5 1px solid!important;
+    border-radius: 0.25rem!important;
+    padding:0.3rem!important; }
+
+.multiselect-dropdown .dropdown-btn .selected-item{
+
+        border: 1px solid #06111c!important;
+        background: #06111c!important;}
+
+.multiselect-item-checkbox input[type=checkbox]:checked + div:before {
+                       background: #06111c!important;
+                       border: 2px solid #06111c!important;
+                       color:#06111c!important;}
+
+.multiselect-item-checkbox input[type=checkbox] + div:before {
+                        border: 2px solid #06111c!important;}
+
+ .mat-tab-label { width: 100%;
+                  border-bottom:1px solid #73C380;
+                  color:#73C380;
+                  font-size: 1.25rem;
+                  margin: 5px; }
+
+.mat-tab-label-active{color:#ffffff; background-color:#34b563;}
+
+.box-green{background-color: #d5efda;
+    border-radius: 0.4rem;
+    border: 1px solid #89CC9D;}
+
+@media (max-width: 959px){
+
+.mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
+            display: none!important;}
+.mat-tab-label {
+        width: 100%!important;
+    }
+    .mat-tab-labels {
+        display: contents!important;}
+
+    }
+

@@ -1,0 +1,16 @@
+.label-pages {
+   float:left;
+   font-weight:bold;
+   margin-top:8px;
+   position: absolute;
+}
+
+.pagination-container {
+   display: flex;
+   align-items: center;
+   flex-direction: column;
+}
+
+.custom-select {
+   height: 28px;
+}

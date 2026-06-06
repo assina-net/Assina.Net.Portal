@@ -1,0 +1,53 @@
+@import "../../../assets/sass/scss/gradient-variables";
+
+:host ::ng-deep .ct-grid{
+    stroke-dasharray: 0px;
+    stroke: rgba(0, 0, 0, 0.1);
+}
+
+:host ::ng-deep .ct-label{
+    font-size: 0.9rem;
+}
+
+// Line with Area Chart CSS Starts
+
+/*:host ::ng-deep .lineArea .ct-series-a .ct-area {
+    fill-opacity: 0.7;
+    fill:url($dashboard-gradient-path +  #gradient1) !important;
+}
+
+:host ::ng-deep .lineArea .ct-series-b .ct-area {
+    fill: url($dashboard-gradient-path +  #gradient) !important;
+    fill-opacity: 0.9;
+}
+:host ::ng-deep .lineArea .ct-line{
+    stroke-width: 0px;
+}
+:host ::ng-deep .lineArea .ct-point {
+    stroke-width: 0px;
+}*/
+
+// Line with Area Chart 1 CSS Ends
+
+// Widget line Chart CSS Starts
+
+:host ::ng-deep .WidgetlineChart .ct-point {
+    stroke-width: 0px;
+}
+:host ::ng-deep .WidgetlineChart .ct-line{
+    stroke: #fff;
+}
+
+
+:host ::ng-deep .WidgetlineChart .ct-grid {
+    stroke-dasharray: 0px;
+     stroke: rgba(255, 255, 255, 0.2);
+}
+
+:host ::ng-deep .WidgetlineChartshadow {
+    -webkit-filter: drop-shadow( 0px 15px 5px rgba(0,0,0,0.8) );
+            filter: drop-shadow( 0px 15px 5px rgba(0,0,0,0.8) ); /* Same syntax as box-shadow, except
+                                                       for the spread property */
+}
+
+// Widget line Chart CSS Ends

@@ -1,0 +1,48 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form class="form form-horizontal" autocomplete="off">
+        <app-botoes-lista (incluirEvent)="incluir()" (editarEvent)="editar()" (excluirEvent)="excluir()"
+            [selecionado]="!objetoSelecionado">
+        </app-botoes-lista>
+        <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+                        <th width="120px"><a sortable-column="0">Código</a>
+                            <input type="text" [(ngModel)]="campoFiltro[0]" name="numero" class="form-control"
+                                id="numero" placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th><a sortable-column="1" sort-direction="ASC">Descrição</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="campoFiltro[1]" name="descricao"
+                                class="form-control" id="descricao" placeholder="Pesquisar..."
+                                (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="140px"><a sortable-column="2">Status</a>
+                            <select class="form-control" [(ngModel)]="campoFiltro[2]" id="status" name="status"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                                <option [ngValue]="null">Selecione</option>
+                                <option *ngFor="let opcao of opcoesStatus" [value]="opcao.value">{{opcao.label}}
+                                </option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody [ngStyle]="classUpperCase()">
+                    <tr *ngFor="let item of listagem" (click)="selecionarLinha(item)" [ngClass]="legendaGrid(item)"
+                        (dblclick)="editar(true)">
+                        <td>{{item.numero}}</td>
+                        <td title="{{item.descricao}}" style="max-width: 300px">
+                            <span>{{item.descricao}}</span>
+                        </td>
+                        <td>{{item.descStatus | uppercase}}</td>
+                    </tr>
+                </tbody>
+                <tr *ngIf="!listagem.length">
+                    <td colspan="3">Nenhum registro encontrado</td>
+                </tr>
+            </table>
+        </div>
+        <div class="box-footer clearfix">
+            <app-pagination [page]="page" (paginationEvent)="changePage($event)"></app-pagination>
+        </div>
+    </form>
+</app-form-simples>

@@ -1,0 +1,158 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form autocomplete="off" class="form form-horizontal">
+
+
+
+        <div>
+            <combo-pessoa-cliente (clienteChangeEvent)="clienteChange()" [excluirPerfilAssinador]="true">
+            </combo-pessoa-cliente>
+        </div>
+
+        
+        <div class="table-responsive table-border-style table-wrapper-scroll-x table-wrapper-scroll-y rounded infinite-scroll" infiniteScroll
+        [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [fromRoot]="true"
+        [infiniteScrollContainer]="'.infinite-scroll'">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+                        <th>
+                            <span *ngIf="!tudoSelecionado" (click)="selecionaTudo()">
+                                <i class="fa fa-circle font-medium-3 grey"></i>
+                            </span>
+                            <span *ngIf="tudoSelecionado" (click)="limpaSelecao()">
+                                <i class="fa fa-circle font-medium-3 primary"></i>
+                            </span>
+                        </th>
+                        <th><a sortable-column="dataCriacao">Data</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.dataCriacao"
+                                [ngStyle]="classUpperCase()" name="dataCriacao" class="form-control" id="dataCriacao"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th><a sortable-column="identificador">Identificador</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.identificador"
+                                [ngStyle]="classUpperCase()" name="identificador" class="form-control"
+                                id="identificador" placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th><a sortable-column="assunto">Assunto</a>
+                            <input type="text" [(ngModel)]="filtro.assunto" name="assunto" class="form-control"
+                                [ngStyle]="classUpperCase()" id="assunto" placeholder="Pesquisar..."
+                                (ngModelChange)="filtrando()">
+                        </th>
+                        <th *ngIf="shared.clienteSelecionado.cliente.segmento.identificacao=='FACTORING' || shared.clienteSelecionado.cliente.segmento.identificacao=='FIDC' || shared.clienteSelecionado.cliente.segmento.identificacao=='SECURITIZADORA'">
+                            <a sortable-column="valorContratro">Valor</a>
+                            <input type="text" [(ngModel)]="filtro.valorContratro" name="valorContratro"
+                                [ngStyle]="classUpperCase()" class="form-control" id="valorContratro"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+
+                        <th *ngIf="false && (shared.clienteSelecionado.cliente.segmento.identificacao=='FACTORING' || shared.clienteSelecionado.cliente.segmento.identificacao=='FIDC' || shared.clienteSelecionado.cliente.segmento.identificacao=='SECURITIZADORA')">
+                            <a sortable-column="fomentada">Fomentada</a>
+                            <input type="text" [(ngModel)]="fomentada" name="fomentada" class="form-control"
+                                [ngStyle]="classUpperCase()" id="fomentada" placeholder="Pesquisar..."
+                                (ngModelChange)="filtarFomentada()">
+                        </th>
+
+                        <th *ngIf="shared.clienteSelecionado.cliente.segmento.identificacao=='CORRETORASEGUROS'">
+                            <a sortable-column="Segurado">Segurado</a>
+                            <input type="text" [(ngModel)]="segurado" name="segurado" class="form-control" id="segurado"
+                                [ngStyle]="classUpperCase()" placeholder="Pesquisar..."
+                                (ngModelChange)="filtarSegurado()">
+                        </th>
+
+                        <th><a sortable-column="statusContrato">Status Contrato</a>
+                            <select class="form-control" [(ngModel)]="filtro.statusContrato" id="statusContrato"
+                                [ngStyle]="classUpperCase()" name="statusContrato" (ngModelChange)="filtrando()">
+                                <option [ngValue]="null">Selecione</option>
+                                <option *ngFor="let opcao of opcoesStatusContrato" [value]="opcao.value">{{opcao.label}}
+                                </option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody [ngStyle]="classUpperCase()">
+                    <tr *ngFor="let contrato of listagem" (click)="selecionarLinha(contrato)"
+                        [ngClass]="legendaGrid(contrato)" (dblclick)="editar(false)">
+                        <td>
+                            <span *ngIf="selection.indexOf(contrato.id) > -1 && verificaSePodeLiberar(contrato)"
+                                class=" btn-gray" (click)="alteranaSelecao(contrato)">
+                                <i class="fa fa-circle font-medium-3 green"></i>
+                            </span>
+
+                            <span *ngIf="selection.indexOf(contrato.id) == -1 && verificaSePodeLiberar(contrato)"
+                                class=" btn-gray" (click)="alteranaSelecao(contrato)">
+                                <i class="fa fa-circle font-medium-3 grey"></i>
+                            </span>
+
+                            <span *ngIf="!verificaSePodeLiberar(contrato)" class=" btn-gray"
+                                (click)="alteranaSelecao(contrato)">
+                                <i class="fa fa-circle font-medium-3 danger"></i>
+                            </span>
+                        </td>
+                        <td class="text-center">{{contrato.dataCriacao | date: 'dd/MM/yyyy HH:mm'}}</td>
+                        <td>{{contrato.identificador}}</td>
+                        <td>{{contrato.assunto}}</td>
+                        <td *ngIf="shared.clienteSelecionado.cliente.segmento.identificacao=='FACTORING' || shared.clienteSelecionado.cliente.segmento.identificacao=='FIDC' || shared.clienteSelecionado.cliente.segmento.identificacao=='SECURITIZADORA'" class="text-right">
+                            {{contrato.valorContratro| currency:'R$':true}}</td>
+
+                        <td *ngIf="false && (shared.clienteSelecionado.cliente.segmento.identificacao=='FACTORING' || shared.clienteSelecionado.cliente.segmento.identificacao=='FIDC' || shared.clienteSelecionado.cliente.segmento.identificacao=='SECURITIZADORA')">
+                            <span *ngFor="let fomentada of contrato.mapPapel['FOMENTADA'] ">
+                                {{fomentada.nomeRazaoSocial}}
+
+                                <span
+                                    *ngIf="shared.clienteSelecionado.sistemaAtributo['CONSULTA_CONTRATO_MOSTRAR_PARTES']=='true'">
+                                    <span *ngFor="let contato of fomentada.contatos">
+                                        <span style="display: inline-flex;font-size: xx-small;">
+                                            <span style="margin-left:5px">{{contato.nomeRazaoSocial}}</span>
+                                            <span *ngIf="contato.duplicatas==true" style="margin-left:5px"> -
+                                                Duplicata</span>
+                                        </span>
+                                    </span>
+                                </span>
+
+                            </span>
+
+                        </td>
+
+                        <td *ngIf="shared.clienteSelecionado.cliente.segmento.identificacao=='CORRETORASEGUROS'">
+                            <span *ngFor="let segurado of contrato.mapPapel['SEGURADO'] ">
+                                {{segurado.nomeRazaoSocial}}
+
+                                <span
+                                    *ngIf="shared.clienteSelecionado.sistemaAtributo['CONSULTA_CONTRATO_MOSTRAR_PARTES']=='true'">
+                                    <span *ngFor="let contato of segurado.contatos">
+                                        <span style="display: inline-flex;font-size: xx-small;">
+                                            <span style="margin-left:5px">{{contato.nomeRazaoSocial}}</span>
+                                            <span *ngIf="contato.duplicatas==true" style="margin-left:5px"> -
+                                                Duplicata</span>
+                                        </span>
+                                    </span>
+                                </span>
+
+                            </span>
+
+                        </td>
+
+                        <td>{{contrato.descStatusContrato}}</td>
+                    </tr>
+                    <tr *ngIf="!listagem.length">
+                        <td colspan="5">Nenhum registro encontrado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-12 text-right m-1">
+            <span style="display: inline-flex;">
+                <app-botoes-lista (incluirEvent)="incluir()" (editarEvent)="editar()" (excluirEvent)="excluir()"
+                    [selecionado]="!objetoSelecionado">
+                </app-botoes-lista>
+                <button class="btn btn-raised btn-primary btn-lg" type="button" (click)="liberarAssinatura()"
+                    [disabled]="selection.length==0">
+                    <!--<i class="fa fa-edit"></i>--> Enviar para assinatura
+                </button>
+            </span>
+        </div>
+        <div class="box-footer clearfix">
+            <!-- <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>-->
+        </div>
+    </form>
+</app-form-simples>

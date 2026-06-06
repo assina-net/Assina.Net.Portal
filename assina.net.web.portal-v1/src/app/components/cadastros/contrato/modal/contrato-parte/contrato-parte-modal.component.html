@@ -1,0 +1,151 @@
+<form #form="ngForm" autocomplete="off" class="form form-horizontal" id="formGroup" validate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="titulo" [item]="parte" [form]="form"
+                           (antesSalvarEvent)="antesSalvarEvent()">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputTipoPessoa" class="control-label">Tipo de Pessoa</label>
+                    <select [(ngModel)]="parte.tipoPessoa" class="form-control" name="tipoPessoa" id="inputTipoPessoa"
+                            #tipoPessoa="ngModel" [disabled]="desabilitarCampos()"
+                            [ngStyle]="classUpperCase()" ng-dropdown required>
+                        <option *ngFor="let tipoPessoa of tipoPessoaList" [value]="tipoPessoa.item_id">
+                            {{tipoPessoa.item_text}}
+                        </option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="tipoPessoa.invalid && (tipoPessoa.dirty || tipoPessoa.touched)">Selecione
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputcpf" class="control-label" *ngIf="parte.tipoPessoa=='FISICA'">CPF</label>
+                    <input-cpf *ngIf="parte.tipoPessoa=='FISICA'"
+                        [disabled]="desabilitarCampos()" [ngStyle]="classUpperCase()"
+                        (cpfChangeEvent)="alterouCpfCNPJ()" [(ngModel)]="parte.cpfCnpj" required appAutofocus
+                        id="inputcpf" #cpfcnpj="ngModel" name="CPF"></input-cpf>
+
+                    <label for="inputcnpj" class="control-label" *ngIf="parte.tipoPessoa=='JURIDICA'">CNPJ</label>
+                    <input-cnpj *ngIf="parte.tipoPessoa=='JURIDICA'"
+                        [disabled]="desabilitarCampos()" [ngStyle]="classUpperCase()"
+                        (cnpjChangeEvent)="alterouCpfCNPJ()" [(ngModel)]="parte.cpfCnpj" required appAutofocus
+                        id="inputcnpj" #cpfcnpj="ngModel" name="cnpj"></input-cnpj>
+
+                </div>
+            </div>
+
+            <div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="inputnomerazaoSocial" class="control-label"
+                            *ngIf="parte.tipoPessoa=='JURIDICA'">Razão
+                            Social</label>
+                        <label for="inputnomerazaoSocial" class="control-label"
+                            *ngIf="parte.tipoPessoa=='FISICA'">Nome</label>
+                        <input type="text" [(ngModel)]="parte.nomeRazaoSocial" name="nomeRazaoSocial"
+                            class="form-control" id="inputnomerazaoSocial" maxlength="60" minlength="3"
+                            #nomeRazaoSocial="ngModel" placeholder="Informe" required>
+                        <small class="form-text text-muted danger"
+                            *ngIf="parte.tipoPessoa=='JURIDICA' && nomeRazaoSocial.errors?.required && (nomeRazaoSocial.dirty || nomeRazaoSocial.touched)">Informe
+                            a Razão Social
+                        </small>
+                        <small class="form-text text-muted danger"
+                            *ngIf="parte.tipoPessoa=='FISICA' && nomeRazaoSocial.errors?.required && (nomeRazaoSocial.dirty || nomeRazaoSocial.touched)">Informe
+                            o nome
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row" *ngIf="parte.tipoPessoa=='JURIDICA'">
+                    <div class="col-md-12">
+                        <br />
+                        <app-complete-tab-form [content]="contratoParteContatoForm" [dados]="contratoParteContatoModal"
+                            [dadosComplementares]="dadosComplementares" [cols]="titulosPartesContato"
+                            [showButtons]="!consultando" (change)="adicionouContratoContatoParte()"
+                            [novoRegistro]="'Nova Parte'"
+                            [mensagemExclusao]="'Deseja retirar este contato para assinatura ? '"
+                            [itemTemplate]="detalheParteContato"
+                            [tituloModal]="titulo">
+                            <ng-template #detalheParteContato let-item>
+                                <td>{{item.nomeRazaoSocial}}</td>
+                                <td>{{item.cpfCnpj}}</td>
+                                <td>{{item.email}}</td>
+                                <td>
+                                    <div *ngFor="let papel of item.papel" style="display: inline-table">
+                                        <span style="display: inline-flex;font-size: x-small;">
+                                            <span style="margin-left:5px">{{papel.papel.nome}}</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-template>
+                        </app-complete-tab-form>
+                    </div>
+                </div>
+
+                <div class="row" *ngIf="parte.tipoPessoa=='FISICA'">
+                    <div class="col-md-4">
+                        <label for="inputCelular" class="control-label" *ngIf="parte.tipoPessoa=='FISICA'">Celular</label>
+                        <input type="text" [(ngModel)]="parte.celular" name="celular" class="form-control" id="inputCelular"
+                               [ngStyle]="classUpperCase()" maxlength="60" minlength="3" #celular="ngModel"
+                               placeholder="Informe o celular" >
+                        <small class="form-text text-muted danger"
+                               *ngIf="celular.errors?.required && (celular.dirty || celular.touched)">Informe o celular
+                        </small>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="inputEmail" class="control-label" *ngIf="parte.tipoPessoa=='FISICA'">E-mail</label>
+                        <input #email="ngModel"
+                               [(ngModel)]="parte.email" [ngStyle]="classLowerCase()" class="form-control"
+                               id="inputEmail"
+                               lowerCase maxlength="100"
+                               minlength="3" name="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$"
+                               placeholder="Informe"
+                               required type="email">
+                        <small *ngIf="email?.errors?.required && (email.dirty || email.touched)"
+                               class="form-email text-muted danger">
+                            Informe o Email
+                        </small>
+                        <small class="form-text text-muted danger"
+                               *ngIf="email.errors?.pattern && (email.dirty || email.touched)">
+                            Informe apenas letras e números [Aa-Zz][0-9]
+                        </small>
+                    </div>
+                </div>
+
+
+                <div class="row" *ngIf="parte.tipoPessoa=='FISICA' && dropdownList.length>0">
+                    <div class="col-md-6">
+                        <label class="control-label">Parte Contrato</label>
+                        <ng-multiselect-dropdown *ngIf="dropdownList"
+                            [disabled]="desabilitarCampos()" name="parteContrato"
+                            id="inputparteContrato" [placeholder]="'Assinar como ...'" [data]="dropdownList"
+                            [(ngModel)]="selectedItems" [settings]="dropdownSettings">
+                        </ng-multiselect-dropdown>
+
+                    </div>
+                    <div class="col-md-6" >
+                        <label class="control-label">Assinar depois de:</label>
+
+                        <select [(ngModel)]="parte.requisitoAssinatura" class="form-control"
+                            [ngStyle]="classUpperCase()"
+                            [disabled]="desabilitarCampos()"
+                            name="inputRequisitoAssinatura" id="inputRequisitoAssinatura" ng-dropdown
+                            #certificado="ngModel">
+                            <option [ngValue]='null'>Sem pré requisisto</option>
+                            <option *ngFor="let parte of partes" [value]="parte.cpfCnpj">{{parte.nomeRazaoSocial}}
+                            </option>
+                        </select>
+
+                    </div>
+                    
+                </div>
+
+            </div>
+
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+        </app-modal-simples>
+    </div>
+</form>

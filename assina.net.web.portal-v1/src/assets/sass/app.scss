@@ -1,0 +1,36 @@
+@import "scss/variables";
+@import "../../../node_modules/bootstrap/scss/bootstrap";
+@import "scss/core/palette";
+@import "scss/app-variables";
+@import "scss/mixins";
+@import "scss/custom-bootstrap";
+@import "scss/custom-bootstrap-rtl";
+@import "scss/core";
+@import "scss/fonts/weather-icons";
+@import "scss/plugins";
+//@import "scss/demo";  // Remove this SCSS from production
+
+:root {
+   --cropper-outline-color: rgba(204, 51, 0, 0.2);
+}
+
+.sw-input-group {
+   margin-bottom: 0;
+   input {
+      border-right-style: none;
+   }
+   .input-group-btn {
+      z-index: 2;
+      button {
+         border-top-left-radius: 0;
+         border-bottom-left-radius: 0;
+         margin-left: -1px;
+      }
+      button[disabled] {
+         pointer-events: none;
+      }
+   }
+   .form-control:last-child {
+      border-right-style: solid !important;
+   }
+}

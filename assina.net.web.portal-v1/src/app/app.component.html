@@ -1,0 +1,16 @@
+<router-outlet></router-outlet>
+<ngx-spinner class="sw-spiner" bdColor="rgba(51,51,51,0.5)" size="large" color="#0f793c" type="cube-transition">
+    <p style="font-size: 20px; color: white ;">Aguarde...</p>
+</ngx-spinner>
+
+<!--<div *ngIf="fileProgress?.status=='progress'"
+    style=" left:50%; top:70%; transform: translate(-50%, -50%); width: 25%; z-index: 100000;">
+    <ngb-progressbar type="info" [max]="100" [value]="fileProgress?.message" [striped]="true" [animated]="true"
+        [showValue]="true">
+    </ngb-progressbar>-->
+
+    <div *ngIf="fileProgress?.status=='progress'" class="mx-auto">
+    <ngb-progressbar type="info" [max]="100" [value]="fileProgress?.message" [striped]="true" [animated]="true"
+        [showValue]="true">
+    </ngb-progressbar>
+</div>

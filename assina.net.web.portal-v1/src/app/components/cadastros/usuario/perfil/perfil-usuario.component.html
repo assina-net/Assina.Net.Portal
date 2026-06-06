@@ -1,0 +1,137 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota">
+    <form #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" class="form form-horizontal" validate>
+        <div class="form-body">
+            <h4 class="form-section text-center mb-1">
+                <div *ngIf="!editando && !consultando">
+                    <!--<i class="fa fa-plus"></i>--> Novo
+                </div>
+                <div *ngIf="editando && !consultando">
+                    <!--<i class="fa fa-edit"></i>--> Editar
+                </div>
+                <div *ngIf="consultando">
+                    <!--<i class="fa fa-eye"></i>--> Consulta
+                </div>
+            </h4>
+            <!--<div class="row">
+                <div class="col-md-12">
+                <combo-pessoa-cliente (clienteChangeEvent)="clienteChange()"></combo-pessoa-cliente>
+            </div>
+            </div>-->
+
+            <div class="row">
+                <div class="col-md-12" *ngIf="usuarioCliente && usuarioCliente.usuario && usuarioCliente.usuario.pessoa">
+                    <label for="inputNome" class="control-label">Nome</label>
+                    <input type="text" [(ngModel)]="usuarioCliente.usuario.pessoa.nomeRazaoSocial" name="nome"
+                        [ngStyle]="classUpperCase()" class="form-control" id="inputNome" [disabled]="usuarioExistente"
+                        #nome="ngModel" placeholder="Informe" minlength="3" maxlength="255" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.required && (nome.dirty || nome.touched)">Informe o Nome
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.minlength && (nome.dirty || nome.touched)">Informe no mínimo 3 carateres
+                    </small>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" *ngIf="usuarioCliente && usuarioCliente.usuario && usuarioCliente.usuario.pessoa">
+                    <label for="inputEmail" class="control-label">E-mail</label>
+                    <input #email="ngModel"
+                           [(ngModel)]="usuarioCliente.usuario.pessoa.email" [ngStyle]="classLowerCase()"
+                           class="form-control" id="inputEmail"
+                           lowerCase maxlength="100"
+                           minlength="3" name="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$"
+                           placeholder="Informe"
+                           required type="email">
+                    <small *ngIf="email?.errors?.required && (email.dirty || email.touched)"
+                           class="form-text text-muted danger">
+                        Informe o Email
+                    </small>
+                    <small class="form-text text-muted danger"
+                           *ngIf="email.errors?.pattern && (email.dirty || email.touched)">
+                        Informe apenas letras e números [Aa-Zz][0-9]
+                    </small>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-6" *ngIf="usuarioCliente && usuarioCliente.usuario && usuarioCliente.usuario.pessoa">
+                    <label for="inputCPF" class="control-label">CPF</label>
+                    <input-cpf [(ngModel)]="usuarioCliente.usuario.pessoa.cpfCnpj" required appAutofocus
+                        [ngStyle]="classUpperCase()" (cpfChangeEvent)="alterouCpf()" id="inputCPF" #cpfCnpj="ngModel"
+                        name="cpfCnpj"></input-cpf>
+
+
+                    <small class="form-text text-muted danger"
+                        *ngIf="cpfCnpj.errors?.required && (cpfCnpj.dirty || cpfCnpj.touched)">Informe o CPF
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="cpfCnpj.errors?.minlength && (cpfCnpj.dirty || cpfCnpj.touched)">Informe no mínimo 11
+                        carateres
+                    </small>
+                </div>
+                <div *ngIf="usuarioCliente && usuarioCliente.perfil && perfilAdmin()" class="col-md-6">
+
+                    <label for="inputProfile" class="control-label">Perfil</label>
+                    <select [(ngModel)]="usuarioCliente.perfil" class="form-control" name="perfil" id="inputProfile"
+                        [ngStyle]="classUpperCase()" #perfil="ngModel" required>
+                        <option *ngFor="let opcao of opcoesPerfil" [value]="opcao.value">{{opcao.label}}</option>
+                        <option value="ROLE_ASSINADOR">ASSINADOR</option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="perfil.invalid && (perfil.dirty || perfil.touched)">Selecione o Perfil
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div *ngIf="usuarioCliente && usuarioCliente.status && perfilAdmin()" class="row">
+                <div class="col-md-2">
+                    <label for="inputStatus" class="control-label">Status</label>
+                    <ui-switch [(ngModel)]="usuarioCliente.status" name="inputStatus" id="inputStatus" #status="ngModel" [ngStyle]="classUpperCase()"
+                        class="switch50" required checkedLabel="Ativo" uncheckedLabel="Inativo" defaultBgColor="#bf2025"
+                        [disabled]="!editando && usuarioExistente">
+                    </ui-switch>
+                    <small class="form-text text-muted danger"
+                        *ngIf="status.invalid && (status.dirty || status.touched)">Escolha o Status
+                    </small>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <br />
+                    <app-complete-tab-form [content]="pessoaTelefoneModal" [dados]="telefones" [cols]="titulosTelefone"
+                        [dadosComplementares]="dadosComplementaresTelefone" [showButtons]="true" [large]="false"
+                        [novoRegistro]="'Novo Telefone'" [mensagemExclusao]="'Deseja excluir o telefone ? '"
+                        (change)="adicionouTelefone()" [itemTemplate]="detalheTelefone">
+                        <ng-template #detalheTelefone let-item>
+                            <td>{{item.tipoTelefone.nome}}</td>
+                            <td>{{item.numero | phone}}</td>
+                            <td>{{item.complemento}}</td>
+                        </ng-template>
+                    </app-complete-tab-form>
+    
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+    
+    
+                </div>
+            </div>
+            
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+            <app-botoes-cadastro [editando]="editando" [podeVoltar]="podeVoltar" [consultando]="consultando"
+                (cancelarEvent)="cancelar()" (voltarEvent)="voltar()" (excluirEvent)="excluir()">
+            </app-botoes-cadastro>
+        </div>
+
+        
+
+    </form>
+</app-form-simples>

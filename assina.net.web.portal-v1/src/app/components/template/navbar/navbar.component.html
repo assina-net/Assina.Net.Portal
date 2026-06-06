@@ -1,0 +1,87 @@
+<nav class="header-navbar navbar navbar-expand-lg navbar-light bg-faded" style="padding: 0 1.5rem; ">
+    <div class="container-fluid">
+        <div class="navbar-header">
+
+            <!--<span class="d-lg-none navbar-right navbar-collapse-toggle mt-2 mb-2">
+                <a class="open-navbar-container" (click)="isCollapsed = !isCollapsed"
+                    [attr.aria-expanded]="!isCollapsed" aria-controls="navbarSupportedContent">
+                    <i class="ft-more-vertical"></i>
+                </a>
+            </span>-->
+            <div class="navbar-logo d-block d-lg-none pt-2" style="width: 100%;text-align: center">
+                <a [routerLink]="['/']">
+                    <span class="text align-middle white text-bold-500"
+                          style="font-size:1.75rem;text-transform: none;"><img src="assets/img/assina.net-logobranco.png" width="200px" /></span>
+                </a>
+            </div>
+        </div>
+
+
+        <div class="navbar-container p-2">
+            <!--<div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">-->
+            <div  id="navbarSupportedContent" >
+
+                <!-- {{getPorta()}}-->
+                <ul class="navbar-nav d-flex flex-row justify-content-center">
+                    <button type="button" class="navbar-toggle float-left d-lg-none mt-1 mb-0" data-toggle="collapse"
+                            (click)="isCollapsed = true;">
+                        <p class="white">Menu</p>
+                        <!--<span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>-->
+                    </button>
+                    <li class=""></li>
+                    <li class="nav-item e d-lg-block rounded-circle">
+                        <a class="nav-link position-relative" (click)="goSign()">
+                            <img src="../../../../assets/img/icones/navbar/exclamacao.png"/>
+                            <!-- <i class="ft-bell font-medium-3"></i>-->
+                        </a>
+                    </li>
+                    <li class="nav-item d-lg-block rounded-circle" *ngIf="podeIncluirContrato()">
+                        <a class="nav-link position-relative" (click)="addContract()">
+                            <img src="../../../../assets/img/icones/navbar/certificado.png"/>
+                            <!--<i class="ft-file-plus font-medium-3" style="vertical-align: middle;"></i>-->
+                        </a>
+                    </li>
+                    <li class="nav-item d-lg-block rounded-circle"  *ngIf="podeIncluirUsuario()">
+                        <a class="nav-link position-relative" (click)="addUser()">
+                            <img src="../../../../assets/img/icones/navbar/perfil+.png"/>
+                            <!--<i class="ft-user-plus font-medium-3"></i>-->
+                        </a>
+                    </li>
+                    <li class="nav-item rounded" ngbDropdown [placement]="placement">
+                        <a class="nav-link position-relative" id="settings" ngbDropdownToggle>
+                            <!-- <i class="ft-user font-medium-3 white darken-4"></i>-->
+                            <img src="../../../../assets/img/icones/navbar/perfil.png"/>
+                            <span class="d-none d-sm-inline-block darken-4 font-medium-3 white ml-1">
+                                {{usuario.pessoa.nomeRazaoSocial.split(' ')[0]}}</span>
+
+                        </a>
+                        <div ngbDropdownMenu aria-labelledby="settings" class="text-left"
+                             style="right: 0!important; left: unset;">
+                            <a class="dropdown-item" (click)="perfilUsuario()">
+                                <!-- <i class="fa fa-key mr-1"></i>-->
+                                <span>Editar Perfil</span>
+                            </a>
+                            <a class="dropdown-item" (click)="trocarSenha()">
+                                <!-- <i class="fa fa-key mr-1"></i>-->
+                                <span>Trocar senha</span>
+                            </a>
+                            <a class="dropdown-item" (click)="signOut()">
+                                <!--<i class="ft-power mr-1"></i>-->
+                                <span>Sair</span>
+                            </a>
+                        </div>
+                    </li>
+                    <!--<li class="nav-item d-none d-lg-block">
+                        <a class="nav-link position-relative customizer-toggle"
+                           id="customizer-toggle-icon">
+                            <i class="ft-aperture font-medium-1" style="color: whitesmoke"></i>
+                        </a>
+                    </li>-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

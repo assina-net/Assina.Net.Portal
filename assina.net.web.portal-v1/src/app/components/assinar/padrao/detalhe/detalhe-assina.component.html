@@ -1,0 +1,163 @@
+<div>
+
+
+
+    <app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota">
+
+        <form class="form form-horizontal" #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" novalidate>
+            <div class="form-body row">
+
+                <div class="col-md-7 table-responsive table-wrapper-scroll-y">
+                    <div>
+                        <br />
+                        <div *ngIf="!somenteUmDocumento">
+                            <app-complete-tab-form [dados]="contratoDocumentoModal" [cols]="titulosDocumentos"
+                                [showButtons]="!consultando" [permiteEditar]="false" [permiteIncluir]="false"
+                                [sizeExibir]="'xl'"
+                                [permiteExcluir]="false" [viewerDoc]="visualizarModalForm"
+                                [permiteExibirDocumento]="true" [itemTemplate]="detalheArquivo">
+                                <ng-template #detalheArquivo let-item>
+                                    <td>{{item.nomeDocumento}}</td>
+                                    <td>{{item.tipoDocumento.nome}}</td>
+                                    <td>{{item.descStatusDocumento}}</td>
+                                    <td>
+                                        <!--<table>
+                                            <tr *ngFor="let papel of item.papel">
+                                                <td>
+                                                    <span style="display: inline-flex;font-size: xx-small;">
+                                                        <span style="margin-left:5px">{{papel.descricao}}</span>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>-->
+                                    </td>
+
+                                </ng-template>
+                            </app-complete-tab-form>
+
+                            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                                {{ message.text }}
+                            </ngb-alert>
+                        </div>
+                    </div>
+
+                    <ng-container *ngIf="somenteUmDocumento">
+                        <!--<ng2-pdfjs-viewer pdfSrc="https://www.africau.edu/images/default/sample.pdf"
+                        [download]="false" [print]="false" [openFile]="false"
+                        [fullScreen]='false'></ng2-pdfjs-viewer>-->
+                        <ng2-pdfjs-viewer [pdfSrc]="byteArray" viewerId="inline" [print]="true" [diagnosticLogs]=false [fullScreen]="true" [openFile]="false" [find]="false"></ng2-pdfjs-viewer>
+                    </ng-container>
+                </div>
+                <div class="col-md-5">
+                    <br />
+                    <app-cadastro-parte-form [dados]="partes" [showButtons]="permiteEditar()" [permiteEditar]="permiteEditar()"
+                        [permiteIncluir]="false" [permiteExcluir]="false" [permiteExibirDocumento]="false"
+                        [contratoAssinado]="ContratoRequest.contrato.statusContrato=='ASSINADO'"
+                        (change)="adicionouContratoParte()">
+                    </app-cadastro-parte-form>
+                    <div class="form-actions" *ngIf="alterouDadosParte">
+                        <button type="button" class="btn btn-raised btn-success mr-1" (click)="salvarContratoParte()">
+                            <!--<i class="fa fa-check"></i>--><i class="fa fa-circle"></i> Salvar
+                        </button><br>
+                        <span class="badge badge-secondary">
+                            Clique em 'Salvar' para gravar as modificações
+                        </span>
+                    </div>
+
+                    <div *ngIf="TemObservadores()">
+                        <br />  
+                        Observadores
+                        <app-cadastro-parte-form [dados]="contratoObservadoresModal" 
+                        [showButtons]="true" [permiteEditar]="true"
+                            [permiteIncluir]="false" [permiteExcluir]="false" [permiteExibirDocumento]="false"
+                        [contratoAssinado]="ContratoRequest.contrato.statusContrato=='ASSINADO'"
+                        (change)="adicionouObservador()"
+                        [statusContrato]="ContratoRequest.contrato.statusContrato"
+                        [novoRegistro]="'Novo Observador'"
+                        [tipoCadastro]="'OBSERVADOR'"
+                        [mensagemExclusao]="'Deseja retirar esta parte para assinatura ? '">
+                        </app-cadastro-parte-form>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-md-7">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="inputIdentificador" class="control-label">Identificador</label>
+                        <input type="text" [(ngModel)]="ContratoRequest.contrato.identificador" name="identificador" readonly="true"
+                            class="form-control" id="inputIdentificador" #identificador="ngModel" placeholder="Informe"
+                            upperCase minlength="3" maxlength="40" required appAutofocus>
+
+                    </div>
+                    <div class="col-md-12">
+                        <label for="inputAssunto" class="control-label">Assunto</label>
+                        <input type="text" [(ngModel)]="ContratoRequest.contrato.assunto" name="x" class="form-control"  readonly="true"
+                            id="inputAssunto" #assunto="ngModel" placeholder="Informe" upperCase maxlength="20"
+                            required>
+
+                    </div>
+                </div>
+            </div>
+            <div class="div-assinaturas col-sm-5">
+                <table class="table-assinaturas table-responsive table-wrapper-scroll-y">
+                    <thead class="thead-custom">
+                        <tr>
+                            <td><label>Histórico</label>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let registro of logListagem">
+                            <td>{{registro.carimboTempoLog}}<br>
+                                <div [innerHTML]="registro.log"></div>
+                                <BR><BR>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!logListagem.length">
+                            <td colspan="5">Nenhum registro encontrado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row m-2">
+            <div class="col-md-12 text-right clearfix">
+                <button type="button" class="btn btn-lg btn-raised btn-secondary mr-1" (click)="voltar()">
+                    <!--<i class="fa fa-repeat"></i>--> Voltar
+                </button>
+                <button *ngIf="!somenteUmDocumento" class="btn btn-lg btn-raised btn-primary mr-1" type="button"
+                    (click)="exibirAssinar()" [hidden]="!ContratoRequest.assinarDocumento">
+                    <!--<i class="fa fa-edit"></i>--> Assinar documentos
+                </button>
+                <button *ngIf="somenteUmDocumento" class="btn btn-lg btn-raised btn-primary mr-1" type="button"
+                    (click)="exibirAssinar()" [hidden]="!ContratoRequest.assinarDocumento">
+                    <!--<i class="fa fa-edit"></i>--> Assinar documento
+                </button>
+
+                <button *ngIf="podeCancelar" class="btn btn-lg btn-raised btn-danger mr-1" type="button"
+                    (click)="exibirCancelar()">
+                    <!--<i class="fa fa-ban"></i>--> Cancelar documentos
+                </button>
+
+                
+                <button  class="btn btn-lg btn-raised btn-danger mr-1" type="button"
+                    (click)="exibirRecusar()"  [hidden]="!ContratoRequest.assinarDocumento">
+                    <!--<i class="fa fa-ban"></i>--> Recusar documentos
+                </button>
+
+                <button class="btn btn-raised btn-blue-as btn-lg mr-1" type="button" (click)="contratoDownload($event)"
+                    [disabled]="ContratoRequest.contrato.statusContrato!='ASSINADO'" *ngIf="!rota.includes('pendente')">
+                    <!-- <i class="fa fa-download"></i>--> Download
+                </button>
+
+                <button class="btn btn-lg btn-raised btn-green mr-1" type="button" 
+                    (click)="exibirTodosDocumentos()">
+                    Imprimir e Visualizar Todos
+                </button>
+            </div>
+        </div>
+
+    </app-form-simples>
+</div>

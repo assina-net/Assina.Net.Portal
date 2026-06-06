@@ -1,0 +1,39 @@
+.btn-verificar{
+    margin-top: 9px;
+    min-width: 170px;
+}
+
+.form-body {
+    top: 90px;
+}
+
+.labelInfo{
+    color: white;
+}
+
+#inputIdentificador{
+    max-width: 450px;
+    display: inline-flex;
+}
+
+@media screen and (max-width: 991px) {
+    .form-body {
+        top: 180px;
+    }
+
+    .labelInfo{
+        color: #0b2238;
+    }
+
+    #inputIdentificador{
+        width: 95vw;
+        margin-left: 5px;
+    }
+}
+
+@media screen and (min-width: 1366px) {
+    #divForm .col-xl-2 {
+        padding: 0 !important;
+        text-align: left !important;
+    }
+}

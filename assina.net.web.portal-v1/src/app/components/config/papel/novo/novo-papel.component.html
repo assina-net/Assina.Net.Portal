@@ -1,0 +1,84 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota" [modal]="modal" [ngStyle]="classUpperCase()">
+    <form class="form form-horizontal" #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" novalidate>
+        <div class="form-body">
+            <h4 class="form-section mb-1 text-center">
+                <div *ngIf="!editando && !consultando"><!--<i class="fa fa-plus"></i>--> Novo cadastro</div>
+                <div *ngIf="editando && !consultando"><!--<i class="fa fa-edit"></i>--> Editando cadastro</div>
+                <div *ngIf="consultando"><!--i class="fa fa-eye"></i>--> Consultando cadastro</div>
+            </h4>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <!--<div [ngClass]="[modal?'col-md-12':'col-md-6']">-->
+                    <label for="inputNome" class="control-label">Nome</label>
+                    <input type="text" [(ngModel)]="Papel.nome" name="inputNome" class="form-control" id="inputNome"
+                        [ngStyle]="classUpperCase()" #nome="ngModel" placeholder="Informe" minlength="3" maxlength="255"
+                        [disabled]="consultando" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.required && (nome.dirty || nome.touched)">Informe
+                        o nome do papel
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.minlength && (nome.dirty || nome.touched)">Informe
+                        no mínimo 3 carateres
+                    </small>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="perfilUsuarioAdmin()">
+                <div class="col-md-12">
+                    <label for="inputIdentificacao" class="control-label">Identificação</label>
+                    <input type="text" [(ngModel)]="Papel.identificacao" name="inputIdentificacao" class="form-control"
+                        [ngStyle]="classUpperCase()" id="inputIdentificacao" #identificacao="ngModel"
+                        [disabled]="consultando" placeholder="Informe" minlength="3" maxlength="255" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="identificacao.errors?.required && (identificacao.dirty || identificacao.touched)">Informe
+                        a Identificação
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="identificacao.errors?.minlength && (identificacao.dirty || identificacao.touched)">Informe
+                        no mínimo 3 carateres
+                    </small>
+                </div>
+            </div>
+
+            <div *ngIf="clienteSistema()" class="row">
+                <div class="col-md-6">
+                    <label for="selTipoCliente" class="control-label">Tipo de cliente</label>
+
+                    <ng-multiselect-dropdown *ngIf="tipoClienteList" name="selTipoCliente" id="selTipoCliente"
+                        [ngStyle]="classUpperCase()" [placeholder]="'Para os clientes do tipo  ...'"
+                        [data]="tipoClienteList" [(ngModel)]="tipoClienteSelecionandos" [settings]="dropdownSettings">
+                    </ng-multiselect-dropdown>
+
+                </div>
+            </div>
+
+
+            <div class="row" *ngIf="false">
+                <div class="col-md-2">
+                    <label for="inputAssina" class="control-label">Solicita Assinatura</label>
+                    <ui-switch [(ngModel)]="TipoDocumento.assina" name="inputNaoAssina" id="inputAssina"
+                        [ngStyle]="classUpperCase()" #assina="ngModel" class="switch100" required checkedLabel="Assina"
+                        uncheckedLabel="Não Assina" defaultBgColor="red">
+                    </ui-switch>
+                    <small class="form-text text-muted danger"
+                        *ngIf="assina.invalid && (assina.dirty || assina.touched)">Escolha o Não Assina
+                    </small>
+                </div>
+            </div>
+
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+            <label *ngIf="consultando" for="inputAssina" class="control-label">Este é um tipo de documento padrão do
+                sistema e não pode ser editado.</label>
+
+            <app-botoes-cadastro [editando]="editando" [podeVoltar]="podeVoltar" [consultando]="consultando"
+                (cancelarEvent)="cancelar()" (voltarEvent)="voltar()" (excluirEvent)="excluir()">
+            </app-botoes-cadastro>
+        </div>
+    </form>
+</app-form-simples>

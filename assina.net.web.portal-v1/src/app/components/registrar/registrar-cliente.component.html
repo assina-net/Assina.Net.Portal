@@ -1,0 +1,185 @@
+<div class="sidebar-header col-md-12" style="margin-bottom: 15px; background: #0b2238;">
+    <div class=" row">
+        <div class="logo clearfix d-block col-md-3">
+            <div style="margin-left: 10px">
+                <img class="logo-img" src="assets/img/assina.net-logobranco.png" />
+            </div>
+        </div>
+        <div class="text-center col-md-6 content-header" style="color: white;">
+            <div>Novo Cliente</div>
+        </div>
+        <div class="col-md-3" style="color: white;">
+        </div>
+    </div>
+</div>
+<img src="../../../assets/img/tela-inicial/tela-base.png" class="w-100 desktop blur3" />
+<img src="../../../assets/img/tela-inicial/tela-base-mobile.png" class="w-100 mt-3 mobile blur3" />
+
+<form #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" class="form form-horizontal"
+      style="position: absolute; top: 0px; left: 0px; width: 100%; "
+      validate>
+    <div class="form-body" style="position: relative; top: 10vh; width: 60vw; margin-left: auto; margin-right: auto;">
+        <div class="col-md-12" *ngIf="!cadastrado">
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputTipoPessoa" class="control-label">Tipo de Pessoa</label>
+                    <select [(ngModel)]="cliente.tipoPessoa" class="form-control" name="tipoPessoa" id="inputTipoPessoa"
+                            #tipoPessoa="ngModel" ng-dropdown required>
+                        <option value="FISICA">FISICA</option>
+                        <option value="JURIDICA">JURIDICA</option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="tipoPessoa.invalid && (tipoPessoa.dirty || tipoPessoa.touched)">Selecione
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" [(ngModel)]="cliente.rgie" name="text" class="form-control rgie" id="inputRgIe"
+                        maxlength="255" minlength="3" #indicacao="ngModel" placeholder="Informe"
+                        [disabled]="!clienteNovo">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6" *ngIf="cliente.tipoPessoa=='FISICA'">
+                    <label for="inputCPF" class="control-label">CPF</label>
+                    <input-cpf [(ngModel)]="cliente.cpfCnpj" required appAutofocus id="inputCPF" #cpfCnpj="ngModel"
+                               (cpfChangeEvent)="alterouCliente($event)" name="cpfCnpj">
+                    </input-cpf>
+                    <small *ngIf="cpfCnpj.errors?.required && (cpfCnpj.dirty || cpfCnpj.touched)"
+                           class="form-text text-muted danger">Informe o CPF
+                    </small>
+                </div>
+
+                <div class="col-md-6" *ngIf="cliente.tipoPessoa=='JURIDICA'">
+                    <label class="control-label" for="inputCnpj">CNPJ</label>
+                    <input-cnpj #cpfCnpj="ngModel" (cnpjChangeEvent)="alterouCliente($event)"
+                                [(ngModel)]="cliente.cpfCnpj" appAutofocus id="inputCnpj"
+                                name="cnpj" required>
+                    </input-cnpj>
+                    <small *ngIf="cpfCnpj.errors?.required && (cpfCnpj.dirty || cpfCnpj.touched)"
+                           class="form-text text-muted danger">Informe o CNPJ
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputNome" class="control-label">Nome</label>
+                    <input type="text" [(ngModel)]="cliente.nomeRazaoSocial" name="nome" class="form-control"
+                        [disabled]="!clienteNovo" id="inputNome" #nome="ngModel" placeholder="Informe" minlength="3"
+                        maxlength="255" required>
+
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.required && (nome.dirty || nome.touched)">Informe o Nome
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.minlength && (nome.dirty || nome.touched)">Informe no mínimo 3 carateres
+                    </small>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="cliente.tipoPessoa=='JURIDICA'">
+                <div class="col-md-6">
+                    <label for="inputCPFResponsavel" class="control-label">CPF Responsável</label>
+                    <input-cpf (cpfChangeEvent)="alterouCpfCNPJ('responsavel')" [(ngModel)]="cliente.cpfCnpjResponsavel"
+                        required [disabled]="!clienteNovo" appAutofocus id="inputCPFResponsavel"
+                        #cpfCnpjResponsavel="ngModel" name="cpfCnpjResponsavel">
+                    </input-cpf>
+
+
+                </div>
+                <div class="col-md-6">
+                    <label for="inputNomeResponsavel" class="control-label">Nome Responsável</label>
+                    <input #nomeResponsavel="ngModel" [(ngModel)]="cliente.nomeRazaoSocialResponsavel"
+                           [disabled]="!clienteNovo"
+                           class="form-control"
+                           id="inputNomeResponsavel" maxlength="255" minlength="3"
+                           name="nomeResponsavel" placeholder="Informe" required type="text">
+                    <small class="form-text text-muted danger"
+                           *ngIf="nomeResponsavel.errors?.required && (nomeResponsavel.dirty || nomeResponsavel.touched)">Informe
+                        o Nome
+                    </small>
+                    <small class="form-text text-muted danger"
+                           *ngIf="nomeResponsavel.errors?.minlength && (nomeResponsavel.dirty || nomeResponsavel.touched)">Informe
+                        no mínimo 3 carateres
+                    </small>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <label for="inputEmail" class="control-label">E-mail</label>
+                    <input #email="ngModel"
+                           [(ngModel)]="cliente.email" [ngStyle]="classLowerCase()" class="form-control" id="inputEmail"
+                           lowerCase maxlength="100"
+                           minlength="3" name="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$"
+                           placeholder="Informe"
+                           required type="email">
+                    <small *ngIf="email?.errors?.required && (email.dirty || email.touched)"
+                           class="form-text text-muted danger">
+                        Informe o Email
+                    </small>
+                    <small class="form-text text-muted danger"
+                           *ngIf="email.errors?.pattern && (email.dirty || email.touched)">
+                        Informe apenas letras e números [Aa-Zz][0-9]
+                    </small>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputNumero" class="control-label">Número Celular</label>
+                    <input type="phone" [(ngModel)]="cliente.celular" name="numero" class="form-control"
+                        [disabled]="!clienteNovo" id="inputNumero" maxlength="11" minlength="10" #numero="ngModel"
+                        placeholder="Informe" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="numero.errors?.required && (numero.dirty || numero.touched)">Informe o Número
+                    </small>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputIndicacao" class="control-label">Indicação</label>
+                    <input type="text" [(ngModel)]="cliente.indicacao" name="indicacao" class="form-control"
+                        id="inputIndicacao" maxlength="255" minlength="3" #indicacao="ngModel" placeholder="Informe"
+                        [disabled]="!clienteNovo" >                    
+                </div>
+                <div class="col-md-6">
+                    <label for="inputPlano" class="control-label">Plano</label>
+                    <select [(ngModel)]="cliente.idPlano    " class="form-control" name="plano" id="inputPlano"
+                        [disabled]="!clienteNovo" ng-dropdown #plano="ngModel" required>
+                        <option value="C526767A-8789-4C55-9E44-6C9B7FC83B52">Plano Gratuito - 5 Assinaturas mensais
+                        </option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="plano.invalid && (plano.dirty || plano.touched)">Selecione
+                    </small>
+                </div>
+            </div>
+
+
+            <div class="row" *ngIf="message">
+                <div class="col-md-12">
+                    <br />
+                    <ngb-alert type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}<br>
+                    </ngb-alert>
+                </div>
+            </div>
+
+
+
+            <app-botoes-cadastro [editando]="editando" [podeVoltar]="false" [consultando]="!clienteNovo"
+                [labelSalvar]="'Registrar'">
+                <div inicio>
+                    <!-- <ngx-recaptcha2 [size]="size" [hl]="lang" [theme]="theme" [type]="type" (expire)="handleExpire()" 
+                        (load)="handleLoad()" (success)="handleSuccess($event)">
+                    </ngx-recaptcha2> -->
+                </div>
+            </app-botoes-cadastro>
+
+        </div>
+        <div class="col-md-12 textCenter" *ngIf="cadastrado">
+            Obrigado por assinar nosso serviço, você receberá um e-mail com usuario e senha para acesso ao sistema caso
+            já não seja cadastrado no nosso portal
+        </div>
+    </div>
+</form>

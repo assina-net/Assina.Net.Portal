@@ -1,0 +1,42 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form autocomplete="off" class="form form-horizontal">
+        <span style="display: inline-flex;">
+            <app-botoes-lista [permiteIncluir]="true" [permiteExcluir]="true" (incluirEvent)="incluir()"
+                (editarEvent)="editar()" (excluirEvent)="excluir()" [selecionado]="!objetoSelecionado">
+            </app-botoes-lista>
+        </span>
+        <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y rounded  infinite-scroll" infiniteScroll
+        [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [fromRoot]="true"
+        [infiniteScrollContainer]="'.infinite-scroll'">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+                        <th width="350px"><a sortable-column="nome" sort-direction="ASC">Nome</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.nome"
+                                [ngStyle]="classUpperCase()" name="nome" class="form-control" id="tipoDocumento"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="250px"><a sortable-column="assina">Identificacao</a>
+                            <input type="text" [(ngModel)]="filtro.identificacao" name="identificacao"
+                                class="form-control" [ngStyle]="classUpperCase()" id="identificacao"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody  [ngStyle]="classUpperCase()" >
+                    <tr *ngFor="let segmento of listagem" (click)="selecionarLinha(segmento)" [ngClass]="legendaGrid(segmento)"
+                        (dblclick)="editar(false)">
+                        <td>{{segmento.nome}}</td>
+                        <td>{{segmento.identificacao}}</td>
+                    </tr>
+                    <tr *ngIf="!listagem.length">
+                        <td colspan="2">Nenhum registro encontrado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="box-footer clearfix">
+            <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>
+        </div>
+    </form>
+</app-form-simples>

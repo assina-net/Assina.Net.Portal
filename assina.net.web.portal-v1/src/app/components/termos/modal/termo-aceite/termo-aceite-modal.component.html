@@ -1,0 +1,75 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" novalidate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Termos > Aceite'" [podeFechar]="false">
+
+            <!-- <mat-tab-group dynamicHeight="true" disableRipple="true">
+                <mat-tab *ngFor="let termo of termos">
+                    <ng-template mat-tab-label>
+                        <i *ngIf="termo.aceite" class="ft-check-circle font-medium-3 iconLabel" style="color: green"></i>
+                        <i *ngIf="!termo.aceite" class="ft-minus-circle font-medium-3 iconLabel" style="color: red"></i>
+                        <span> {{termo.nome}}</span>
+                    </ng-template>
+
+                    <div style="height:300px">
+                        <pdf-viewer src="{{termo.documento}}" original-size="true" show-all="false" [autoresize]="true"
+                            [fit-to-page]='true' [render-text]='false'></pdf-viewer>
+                    </div>
+                    <div class="col-md-4">
+                        <ui-switch [(ngModel)]="termo.aceite" name="inputStatus" id="inputStatus" #status="ngModel"
+                            [ngStyle]="classUpperCase()" class="switch100" required checkedLabel="Aceito"
+                            uncheckedLabel="Não Aceito" defaultBgColor="red">
+                        </ui-switch>
+                        <small class="form-text text-muted danger"
+                            *ngIf="status.invalid && (status.dirty || status.touched)">Escolha o Status
+                        </small>
+                    </div>
+                </mat-tab>
+            </mat-tab-group> -->
+
+            <label>{{termosPendentes}}</label>
+
+
+
+            <table class="table mb-0">
+                <tbody [ngStyle]="classUpperCase()">
+                <tr *ngFor="let termo of termos; let i = index">
+                    <td style="padding: 0">
+                        <a class="btn btn-info btn-flat mb-0 p-1" placement="top" ngbTooltip="Exibir Documento"
+                           (click)="exibirTermo(termo)">
+                            <i class="fa fa-eye font-medium-4"></i>
+                        </a>
+                    </td>
+                    <td> <i *ngIf="termo.aceite" class="ft-check-circle font-medium-3 iconLabel"
+                            style="color: green"></i>
+                        <i *ngIf="!termo.aceite" class="ft-minus-circle font-medium-3 iconLabel"
+                           style="color: red"></i>
+                        <span> {{termo.nome}}</span></td>
+                    <td>
+                        <div class="col-md-10">
+                            <ui-switch [(ngModel)]="termo.aceite" name="inputStatus" id="inputStatus"
+                                       #status="ngModel" [ngStyle]="classUpperCase()" class="switch100" required
+                                       checkedLabel="Aceito" uncheckedLabel="Não Aceito" defaultBgColor="red">
+                            </ui-switch>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tr *ngIf="!termos || termos.length==0">
+                    <td [colSpan]="colspan">Nenhum registro encontrado</td>
+                </tr>
+            </table>
+
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+
+            <div botoes>
+                <button type="button" class="btn btn-raised btn-secondary" (click)="fecharTermosAceitos()"> Continuar
+                </button>
+            </div>
+
+        </app-modal-simples>
+    </div>
+</form>

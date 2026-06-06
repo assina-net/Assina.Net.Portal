@@ -1,0 +1,74 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao">
+    <form autocomplete="off" class="form form-horizontal">
+
+        <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y table-border-style rounded  infinite-scroll" infiniteScroll
+        [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [fromRoot]="true"
+        [infiniteScrollContainer]="'.infinite-scroll'">
+            <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
+                <thead class="thead-custom">
+                    <tr>
+                        <th width="350px"><a sortable-column="nome" sort-direction="ASC">Nome</a>
+                            <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.pessoa.nomeRazaoSocial"
+                                [ngStyle]="classUpperCase()" name="nome" class="form-control" id="nome"
+                                placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                        </th>
+                        <th width="250px"><a sortable-column="email">E-mail</a>
+                            <input type="text" [(ngModel)]="filtro.pessoa.email" name="email" class="form-control"
+                                   (ngModelChange)="filtrando()" [ngStyle]="classLowerCase()" id="email"
+                                   placeholder="Pesquisar...">
+                        </th>
+                        <th width="200px"><a sortable-column="segmento">Segmento</a>
+                            <select class="form-control" [(ngModel)]="filtro.segmento.id" id="segmento"
+                                    [ngStyle]="classUpperCase()" name="segmento" (ngModelChange)="filtrando()">
+                                <option [ngValue]="null">Selecione</option>
+                                <option *ngFor="let opcao of tipoClienteList" [value]="opcao.item_id">{{opcao.item_text}}
+                                </option>
+                            </select>
+                        </th>
+                        <th width="200px"><a sortable-column="plano">Plano</a>
+                            <select class="form-control" [(ngModel)]="filtro.plano.id" id="plano"
+                                    [ngStyle]="classUpperCase()" name="plano" (ngModelChange)="filtrando()">
+                                <option [ngValue]="null">Todos</option>
+                                <option *ngFor="let opcao of tipoPlanoList" [value]="opcao.item_id">{{opcao.item_text}}
+                                </option>
+                            </select>
+                        </th>
+                        <th width="200px"><a sortable-column="status">Status</a>
+                            <select class="form-control" [(ngModel)]="filtro.status" id="status" name="status"
+                                [ngStyle]="classUpperCase()" (ngModelChange)="filtrando()">
+                                <option [ngValue]="null">Selecione</option>
+                                <option *ngFor="let opcao of opcoesStatus" [value]="opcao.value">{{opcao.label}}
+                                </option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody  [ngStyle]="classUpperCase()" >
+                    <tr *ngFor="let cliente of listagem" (click)="selecionarLinha(cliente)"
+                        [ngClass]="legendaGrid(cliente)" (dblclick)="editar(false)">
+                        <td>{{cliente.pessoa.nomeRazaoSocial}}</td>
+                        <td>{{cliente.pessoa.email}}</td>
+                        <td>{{cliente.segmento.nome}}</td>
+                        <td>{{cliente.descStatus}}</td>
+                    </tr>
+                    <tr *ngIf="!listagem.length">
+                        <td colspan="5">Nenhum registro encontrado</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="row">
+            <div class=" text-right col-md-12 m-1">
+            <span style="display: inline-flex;">
+                <app-botoes-lista [permiteIncluir]="perfilEditar" [permiteExcluir]="perfilEditar" (incluirEvent)="incluir()"
+                (editarEvent)="editar()" (excluirEvent)="excluir()" [selecionado]="!objetoSelecionado">
+                </app-botoes-lista>
+            </span>
+            </div>
+        </div>
+        <!--<div class="box-footer clearfix">
+            <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>
+        </div>-->
+    </form>
+</app-form-simples>

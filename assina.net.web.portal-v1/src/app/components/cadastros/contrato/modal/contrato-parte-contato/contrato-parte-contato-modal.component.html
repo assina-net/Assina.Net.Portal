@@ -1,0 +1,60 @@
+<form #form="ngForm" [ngStyle]="classUpperCase()" autocomplete="off" class="form form-horizontal" validate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Cadastro > Contrato > Contrato Partes > Pessoa Jurídica > Contato '"
+                           [form]="form" [item]="contato">
+
+            <div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="inputCpfCnpj" class="control-label">Cpf</label>
+                        <input type="text" [(ngModel)]="contato.cpfCnpj" name="cpfCnpj" class="form-control"
+                               #cpfCnpj="ngModel" [ngStyle]="classUpperCase()" id="inputCpfCnpj" placeholder="Informe"
+                               required appAutofocus maxlength="14">
+                        <small class="form-text text-muted danger"
+                               *ngIf="cpfCnpj.errors?.required && (cpfCnpj.dirty || cpfCnpj.touched)">Informe o cpf
+                        </small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="inputNomeRazaoSocial" class="control-label">Nome</label>
+                        <input type="text" [(ngModel)]="contato.nomeRazaoSocial" name="nomeRazaoSocial"
+                            [ngStyle]="classUpperCase()" class="form-control" id="inputNomeRazaoSocial" maxlength="60"
+                            minlength="3" #nomeRazaoSocial="ngModel" placeholder="Informe" required>
+                        <small class="form-text text-muted danger"
+                            *ngIf="nomeRazaoSocial.errors?.required && (nomeRazaoSocial.dirty || nomeRazaoSocial.touched)">Informe
+                            o nome
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="inputEmail" class="control-label">E-mail</label>
+                        <input #email="ngModel"
+                               [(ngModel)]="contato.email" [ngStyle]="classLowerCase()" class="form-control"
+                               id="inputEmail"
+                               lowerCase maxlength="100"
+                               minlength="3" name="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$"
+                               placeholder="Informe"
+                               required type="email">
+                        <small *ngIf="email?.errors?.required && (email.dirty || email.touched)"
+                               class="form-text text-muted danger">
+                            Informe o Email
+                        </small>
+                        <small class="form-text text-muted danger"
+                               *ngIf="email.errors?.pattern && (email.dirty || email.touched)">
+                            Informe apenas letras e números [Aa-Zz][0-9]
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+        </app-modal-simples>
+    </div>
+</form>

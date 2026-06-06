@@ -1,0 +1,53 @@
+<form autocomplete="off" class="form form-horizontal" #form="ngForm" novalidate>
+    <div class="form-body">
+        <app-modal-simples [titulo]="'Cadastro > Contrato > Documentos > Papel'" [form]="form">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="inputNome" class="control-label">Nome</label>
+                    <input type="text" [(ngModel)]="papel.nome" name="inputNome" class="form-control" id="inputNome"
+                        [ngStyle]="classUpperCase()" #nome="ngModel" placeholder="Informe" minlength="3" maxlength="255"
+                         required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.required && (nome.dirty || nome.touched)">Informe
+                        o nome do papel
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.minlength && (nome.dirty || nome.touched)">Informe
+                        no mínimo 3 carateres
+                    </small>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="perfilUsuarioAdmin()">
+                <div class="col-md-12">
+                    <label for="inputIdentificacao" class="control-label">Identificação</label>
+                    <input type="text" [(ngModel)]="papel.identificacao" name="inputIdentificacao" class="form-control"
+                        [ngStyle]="classUpperCase()" id="inputIdentificacao" #identificacao="ngModel"
+                         placeholder="Informe" minlength="3" maxlength="255" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="identificacao.errors?.required && (identificacao.dirty || identificacao.touched)">Informe
+                        a Identificação
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="identificacao.errors?.minlength && (identificacao.dirty || identificacao.touched)">Informe
+                        no mínimo 3 carateres
+                    </small>
+                </div>
+            </div>
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+            <label for="inputAssina" class="control-label">Este é um tipo de documento padrão do
+                sistema e não pode ser editado.</label>
+
+
+            <div botoes>
+                <button (click)="salvar()" class="btn btn-raised btn-primary" type="button">
+                    Incluir
+                </button>
+            </div>
+        </app-modal-simples>
+    </div>
+</form>

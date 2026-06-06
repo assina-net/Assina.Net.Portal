@@ -1,0 +1,209 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota">
+
+    <form #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" class="form form-horizontal" validate>
+
+
+        <div class="form-body">
+            <h4 class="form-section mb-1 text-center ">
+                <div *ngIf="!editando && !consultando"><!--<i class="fa fa-plus"></i> -->Novo cadastro</div>
+                <div *ngIf="editando && !consultando"><!--<i class="fa fa-edit"></i>--> Editar</div>
+                <div *ngIf="consultando"><!--<i class="fa fa-eye"></i>--> Consultando cadastro</div>
+            </h4>
+
+            <div class="row" *ngIf="perfilUsuarioAdmin()">
+                <div class="col-md-12">
+                    <label class="control-label">Id</label>
+                    <label class="form-control">{{cliente.id}}</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputTipoPessoa" class="control-label">Tipo de Pessoa</label>
+                    <select [(ngModel)]="cliente.pessoa.tipoPessoa" class="form-control" name="tipoPessoa"
+                        [ngStyle]="classUpperCase()"  id="inputTipoPessoa" ng-dropdown
+                        #tipoPessoa="ngModel" required>
+                        <option *ngFor="let tipoPessoa of tipoPessoaList" [value]="tipoPessoa.item_id">
+                            {{tipoPessoa.item_text}}
+                        </option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="tipoPessoa.invalid && (tipoPessoa.dirty || tipoPessoa.touched)">Selecione
+                    </small>
+                </div>
+                <div class="col-md-6" *ngIf="cliente.pessoa.tipoPessoa=='FISICA'">
+                    <label for="inputCPF" class="control-label" *ngIf="cliente.pessoa.tipoPessoa=='FISICA'">CPF</label>
+                    <input-cpf (cpfChangeEvent)="alterouCpf()" [(ngModel)]="cliente.pessoa.cpfCnpj" required
+                        [ngStyle]="classUpperCase()" appAutofocus id="inputCPF" #cpfCnpj="ngModel" name="cpfCnpj">
+                    </input-cpf>
+                </div>
+
+                <div class="col-md-2" *ngIf="cliente.pessoa.tipoPessoa=='JURIDICA'">
+                    <label for="inputcnpj" class="control-label">Cnpj</label>
+                    <input-cnpj (cnpjChangeEvent)="alterouCpf()" [(ngModel)]="cliente.pessoa.cpfCnpj" required
+                        [ngStyle]="classUpperCase()" appAutofocus id="inputcnpj" #cpfCnpj="ngModel" name="cpfCnpj">
+                    </input-cnpj>
+                </div>
+            </div>
+            <div class="row">
+
+
+                <div class="col-md-6">
+                    <label for="inputNome" class="control-label">Nome</label>
+                    <input type="text" [(ngModel)]="cliente.pessoa.nomeRazaoSocial" name="nome" class="form-control"
+                        [ngStyle]="classUpperCase()" id="inputNome"  #nome="ngModel"
+                        placeholder="Informe" minlength="3" maxlength="255" required>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.required && (nome.dirty || nome.touched)">Informe o Nome
+                    </small>
+                    <small class="form-text text-muted danger"
+                        *ngIf="nome.errors?.minlength && (nome.dirty || nome.touched)">Informe no mínimo
+                        3
+                        carateres
+                    </small>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="inputEmail" class="control-label">E-mail</label>
+                    <input #email="ngModel"
+                           [(ngModel)]="cliente.pessoa.email" [ngStyle]="classLowerCase()" class="form-control"
+                           id="inputEmail"
+                           lowerCase maxlength="100"
+                           minlength="3" name="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$"
+                           placeholder="Informe"
+                           required type="email">
+                    <small *ngIf="email?.errors?.required && (email.dirty || email.touched)"
+                           class="form-text text-muted danger">
+                        Informe o Email
+                    </small>
+                    <small class="form-text text-muted danger"
+                           *ngIf="email.errors?.pattern && (email.dirty || email.touched)">
+                        Informe apenas letras e números [Aa-Zz][0-9]
+                    </small>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputTipoCliente" class="control-label">Segmento</label>
+                    <select [(ngModel)]="cliente.segmento.id" class="form-control" name="inputTipoCliente"
+                        [ngStyle]="classUpperCase()" [ngStyle]="classUpperCase()" id="inputTipoCliente"
+                        #tipoCliente="ngModel" required>
+                        <option *ngFor="let tipoClienteItem of tipoClienteList" [value]="tipoClienteItem.item_id">
+                            {{tipoClienteItem.item_text}}
+                        </option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="tipoCliente.invalid && (tipoCliente.dirty || tipoCliente.touched)">Selecione
+                        o
+                        Tipo de
+                        Cliente
+                    </small>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="control-label">Data de início </label>
+                    <input #dataInicio="ngModel" type="date" [(ngModel)]="cliente.dataInicioContrato" useValueAsDate
+                        [ngStyle]="classUpperCase()" class="form-control" required id="dataInicio" name="dataInicio">
+
+
+                </div>
+
+                <div class="col-md-3">
+                    <label class="control-label">Data fim </label>
+                    <input #dataFim="ngModel" type="date" [(ngModel)]="cliente.dataFimContrato" useValueAsDate
+                        [ngStyle]="classUpperCase()" class="form-control" id="dataFim" name="dataFim">
+
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="inputTipoPlano" class="control-label">Plano</label>
+                    <select [(ngModel)]="cliente.plano.id" class="form-control" name="inputTipoPlano"
+                        [ngStyle]="classUpperCase()" [ngStyle]="classUpperCase()" id="inputTipoPlano"
+                        #tipoPlano="ngModel" required>
+                        <option *ngFor="let tipoPlano of tipoPlanoList" [value]="tipoPlano.item_id">
+                            {{tipoPlano.item_text}}
+                        </option>
+                    </select>
+                    <small class="form-text text-muted danger"
+                        *ngIf="tipoPlano.invalid && (tipoPlano.dirty || tipoPlano.touched)">Selecione
+                        o
+                        Tipo de
+                        Plano
+                    </small>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="inputStatus" class="control-label">Status</label>
+                    <ui-switch [(ngModel)]="cliente.status" name="inputStatus" id="inputStatus" #status="ngModel"
+                        class="switch100" required checkedLabel="Ativo" uncheckedLabel="Inativo"
+                        [disabled]="!editando && clienteExistente">
+                    </ui-switch>
+                    <small class="form-text text-muted danger"
+                        *ngIf="status.invalid && (status.dirty || status.touched)">Escolha o Status
+                    </small>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <br />
+                    <app-complete-tab-form [content]="pessoaTelefoneModal" [dados]="telefones" [cols]="titulosTelefone"
+                        [dadosComplementares]="dadosComplementaresTelefone" [showButtons]="true" [large]="false"
+                        [novoRegistro]="'Novo Telefone'" [mensagemExclusao]="'Deseja excluir o telefone ? '"
+                        (change)="adicionouTelefone()" [itemTemplate]="detalheTelefone">
+                        <ng-template #detalheTelefone let-item>
+                            <td>{{item.tipoTelefone.nome}}</td>
+                            <td>{{item.numero | phone}}</td>
+                            <td>{{item.complemento}}</td>
+                        </ng-template>
+                    </app-complete-tab-form>
+
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+
+
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <br />
+                    <app-complete-tab-form [content]="pessoaEnderecoModal" [dados]="enderecos" [cols]="titulosEndereco"
+                        [dadosComplementares]="dadosComplementaresEndereco" [showButtons]="true"
+                        [novoRegistro]="'Novo Endereço'" [mensagemExclusao]="'Deseja excluir o endereço ? '"
+                        (change)="adicionouEndereco()" [itemTemplate]="detalheEndereco">
+                        <ng-template #detalheEndereco let-item>
+                            <td>{{item.tipoEndereco.nome}}</td>
+                            <td>{{item.endereco}} {{item.numero}} {{item.complemento}}</td>
+                            <td>{{item.cep}}</td>
+                        </ng-template>
+                    </app-complete-tab-form>
+
+                    <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                        {{ message.text }}
+                    </ngb-alert>
+
+
+                </div>
+            </div>
+
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+            <app-botoes-cadastro [editando]="editando" [podeVoltar]="podeVoltar" [consultando]="consultando"
+                (cancelarEvent)="cancelar()" (voltarEvent)="voltar()" (excluirEvent)="excluir()">
+            </app-botoes-cadastro>
+
+        </div>
+    </form>
+</app-form-simples>

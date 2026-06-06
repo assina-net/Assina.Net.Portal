@@ -1,0 +1,91 @@
+<app-form-simples [titulo]="titulo" [navegacao]="navegacao" [rota]="rota">
+    <form class="form form-horizontal" #form="ngForm" (ngSubmit)="salvar()" autocomplete="off" novalidate>
+        <div class="form-body">
+            <h4 class="form-section mb-1 text-center">
+                <div *ngIf="!editando && !consultando"><!--<i class="fa fa-plus"></i>--> Novo cadastro</div>
+                <div *ngIf="editando && !consultando"><!--<i class="fa fa-edit"></i>--> Editando parâmetro</div>
+                <div *ngIf="consultando"><!--<i class="fa fa-eye"></i>--> Consultando cadastro</div>
+            </h4>
+            <div class="row">
+                <div class="col-md-8">
+                    <label type="text" style="font-weight:=bold">{{SistemaAtributo.tipoAtributo.descricao}}</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- pattern="/^[0-9]{1,10}$/" -->
+                <div class="col-md-2" *ngIf="SistemaAtributo.tipoAtributo.tipoValor=='INTEGER'">
+                    <label for="inputValorAtributoInteger" class="control-label">Valor</label>
+                    <input type="text" [(ngModel)]="SistemaAtributo.valorAtributo" name="inputValorAtributo"
+                        [ngStyle]="classUpperCase()" class="form-control" id="inputValorAtributoInteger"
+                        #valorAtributo="ngModel" placeholder="Informe o valor" maxlength="10" required>
+
+                    <small class="form-text text-muted danger"
+                        *ngIf="valorAtributo.errors?.required && (valorAtributo.dirty || valorAtributo.touched)">Informe
+                        o Valor
+                    </small>
+                </div>
+                <div class="col-md-4" *ngIf="SistemaAtributo.tipoAtributo.tipoValor=='TEXT_SIMPLE'">
+                    <label for="inputValorAtributo" class="control-label">Valor</label>
+                    <input type="text" [(ngModel)]="SistemaAtributo.valorAtributo" name="inputValorAtributo"
+                           [ngStyle]="classUpperCase()" class="form-control" id="inputValorAtributo"
+                           #valorAtributo="ngModel" placeholder="Informe o valor" maxlength="250" required>
+
+                    <small class="form-text text-muted danger"
+                           *ngIf="valorAtributo.errors?.required && (valorAtributo.dirty || valorAtributo.touched)">Informe
+                        o Valor
+                    </small>
+                </div>
+
+                <div class="col-md-3" *ngIf="SistemaAtributo.tipoAtributo.tipoValor=='BOOLEAN'">
+                    <ui-switch [(ngModel)]="SistemaAtributo.valorAtributo" name="inputValorAtributo"
+                        id="inputValorAtributo" #valorAtributo="ngModel" class="switch100" required checkedLabel="Ativo"
+                        uncheckedLabel="Inativo" >
+                    </ui-switch>
+                </div>
+
+                <div class="col-md-12" *ngIf="SistemaAtributo.tipoAtributo.tipoValor=='TEXT_HTML'">
+                    <angular-editor name="inputValorAtributo" [config]="editorConfig"
+                        [(ngModel)]="SistemaAtributo.valorAtributo"></angular-editor>
+                </div>
+
+                <div class="col-md-12" *ngIf="SistemaAtributo.tipoAtributo.tipoValor=='DIASSEMANA'">
+                    <ng-multiselect-dropdown *ngIf="diasSemana" [ngStyle]="classUpperCase()" name="inputValorAtributo"
+                        id="inputValorAtributo" [placeholder]="'Escolha os dias da semana'" [data]="diasSemana"
+                        [(ngModel)]="comboValores" [settings]="diasSemanaSettings">
+                    </ng-multiselect-dropdown>
+                </div>
+                <div class="col-md-12" *ngIf="SistemaAtributo.tipoAtributo.tipoValor=='HORARIOS'">
+                    <ng-multiselect-dropdown *ngIf="horarios" [ngStyle]="classUpperCase()" name="inputValorAtributo"
+                        id="inputValorAtributo" [placeholder]="'Escolha os horários'" [data]="horarios"
+                        [(ngModel)]="comboValores" [settings]="horariosSettings">
+                    </ng-multiselect-dropdown>
+                </div>
+
+                <div class="col-md-12" *ngIf="SistemaAtributo.tipoAtributo.tipoValor=='PDF'">
+                    <!-- UPLOAD PDF -->
+                    <div class="col-md-2">
+                        <span id="documento" class="btn btn-raised btn-success btn-file form-control mb-0">
+                            <!--<i class="ft ft-paperclip"></i>--><span > Selecionar novo arquivo</span>
+                            <input class="form-control" type="file" id="idFile" accept=".pdf" 
+                                (change)="uploadArquivo($event)" title=" " />
+                        </span>
+                    </div>
+                    <div class="col-md-12"  *ngIf="SistemaAtributo.valorAtributo != null">
+                        <div style="height:500px">
+                            <ng2-pdfjs-viewer [pdfSrc]="byteArray" viewerId="inline" [print]="true" [diagnosticLogs]=false  [fullScreen]="true" [openFile]="false" [find]="false"></ng2-pdfjs-viewer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
+                {{ message.text }}
+            </ngb-alert>
+
+            <app-botoes-cadastro [editando]="editando" [podeVoltar]="podeVoltar" [consultando]="consultando"
+                (cancelarEvent)="cancelar()" (voltarEvent)="voltar()" (excluirEvent)="excluir()">
+            </app-botoes-cadastro>
+        </div>
+    </form>
+</app-form-simples>
