@@ -51,6 +51,51 @@
    padding: 0.5rem;
 }
 
+:host ::ng-deep .crud-page {
+   min-height: calc(100vh - 80px);
+}
+
+:host ::ng-deep .crud-content,
+:host ::ng-deep .crud-content .content-body,
+:host ::ng-deep .crud-content .card,
+:host ::ng-deep .crud-content .card-body,
+:host ::ng-deep .crud-content .card-block {
+   min-height: 0;
+}
+
+:host ::ng-deep .crud-content .card {
+   min-height: calc(100vh - 150px);
+}
+
+:host ::ng-deep .crud-content .card-body,
+:host ::ng-deep .crud-content .card-block,
+:host ::ng-deep .crud-content form.form {
+   display: flex;
+   flex-direction: column;
+}
+
+:host ::ng-deep .crud-content .card-body,
+:host ::ng-deep .crud-content .card-block {
+   min-height: calc(100vh - 150px);
+}
+
+:host ::ng-deep .crud-content form.form {
+   flex: 1 1 auto;
+   min-height: 0;
+}
+
+:host ::ng-deep .crud-content form.form .form-body {
+   display: flex;
+   flex: 1 1 auto;
+   flex-direction: column;
+   min-height: 0;
+   overflow-y: auto;
+}
+
+:host ::ng-deep .crud-content .box-footer {
+   flex: 0 0 auto;
+}
+
 :host ::ng-deep .content-form .form-actions {
    margin-top: 10px;
    padding: 20px 0 0;
@@ -108,9 +153,81 @@
 }
 
 :host ::ng-deep .table-wrapper-scroll-y {
-   max-height: 300px;
+   flex: 1 1 auto;
+   max-height: none;
    min-height: 280px;
    overflow-y: auto;
+}
+
+:host ::ng-deep .crud-content .table-wrapper-scroll-y {
+   max-height: calc(100vh - 350px);
+   min-height: 280px;
+}
+
+:host ::ng-deep .crud-actions {
+   align-items: center;
+   background: #f7f7f7;
+   border-top: 1px solid #d9d9d9;
+   bottom: 0;
+   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+   display: flex;
+   flex-wrap: wrap;
+   gap: 0.35rem;
+   justify-content: flex-end;
+   margin: 0.5rem -0.5rem -0.5rem;
+   padding: 0.75rem 0.5rem;
+   position: sticky;
+   z-index: 20;
+}
+
+:host ::ng-deep .crud-content form.form > .crud-actions,
+:host ::ng-deep .crud-content form.form > app-botoes-lista,
+:host ::ng-deep .crud-content form.form > app-botoes-cadastro {
+   flex: 0 0 auto;
+}
+
+:host ::ng-deep .row.crud-actions {
+   margin-left: -0.5rem;
+   margin-right: -0.5rem;
+}
+
+:host ::ng-deep .row.crud-actions > [class*="col-"],
+:host ::ng-deep .crud-actions > .col-md-12 {
+   max-width: 100%;
+   padding-left: 0;
+   padding-right: 0;
+   width: 100%;
+}
+
+:host ::ng-deep .crud-actions.modal-footer {
+   border-left: 0;
+   border-right: 0;
+   border-bottom: 0;
+}
+
+:host ::ng-deep .crud-actions .btn,
+:host ::ng-deep .crud-actions button {
+   margin-bottom: 0.25rem;
+   margin-top: 0.25rem;
+   white-space: normal;
+}
+
+:host ::ng-deep .crud-actions > span,
+:host ::ng-deep .crud-actions > div {
+   align-items: center;
+   display: flex !important;
+   flex-wrap: wrap;
+   gap: 0.35rem;
+   justify-content: flex-end;
+}
+
+:host ::ng-deep .crud-actions .crud-actions {
+   background: transparent;
+   border-top: 0;
+   box-shadow: none;
+   margin: 0;
+   padding: 0;
+   position: static;
 }
 
 :host ::ng-deep .table-wrapper-scroll-yy {
@@ -220,4 +337,61 @@
 
 ::ng-deep .mat-tab-body-content {
   overflow: visible !important;
+}
+
+@media (max-width: 767px) {
+   :host ::ng-deep .content-header {
+      font-size: 1.1rem;
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+   }
+
+   :host ::ng-deep .crud-content .card {
+      min-height: calc(100vh - 125px);
+   }
+
+   :host ::ng-deep .crud-content .table-wrapper-scroll-y {
+      max-height: none;
+      min-height: 260px;
+   }
+
+   :host ::ng-deep .content-form .card .card-block {
+      padding: 0.35rem;
+   }
+
+   :host ::ng-deep .table-wrapper-scroll-x {
+      width: 100%;
+   }
+
+   :host ::ng-deep .table th,
+   :host ::ng-deep .table td {
+      font-size: 0.85rem;
+      padding: 0.35rem;
+   }
+
+   :host ::ng-deep .table th {
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+   }
+
+   :host ::ng-deep .crud-actions {
+      justify-content: stretch;
+      margin-left: -0.35rem;
+      margin-right: -0.35rem;
+      padding: 0.55rem 0.35rem;
+   }
+
+   :host ::ng-deep .crud-actions .btn,
+   :host ::ng-deep .crud-actions button {
+      flex: 1 1 130px;
+      font-size: 0.9rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+   }
+
+   :host ::ng-deep .crud-actions > span,
+   :host ::ng-deep .crud-actions > div {
+      flex: 1 1 100%;
+      justify-content: stretch;
+   }
 }

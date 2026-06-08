@@ -7,7 +7,7 @@ declare var $: any;
 @Component({
    selector: 'app-form-simples',
    template: `
-   <section id="principal" *ngIf="!modal">
+   <section id="principal" class="crud-page" *ngIf="!modal">
       <div class="row ">
       <div class="text-center col-sm-12">
             <div class="content-header primary col-sm-12 text-center px-md-5" style=" border-bottom:1px solid #34b563; padding:20px 0 10px;">{{titulo}}</div>
@@ -18,7 +18,7 @@ declare var $: any;
          </div>
       </div>
 
-      <div class="content-form row text-left">
+      <div class="content-form row text-left crud-content">
          <!--Tabset Starts-->
          <div class="content-body col-md-12 col-lg-12">
             <div class="card">

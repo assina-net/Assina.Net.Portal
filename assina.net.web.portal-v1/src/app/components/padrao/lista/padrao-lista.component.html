@@ -1,8 +1,5 @@
 <app-form-simples [titulo]="titulo" [navegacao]="navegacao">
     <form class="form form-horizontal" autocomplete="off">
-        <app-botoes-lista (incluirEvent)="incluir()" (editarEvent)="editar()" (excluirEvent)="excluir()"
-            [selecionado]="!objetoSelecionado">
-        </app-botoes-lista>
         <div class="table-responsive table-wrapper-scroll-x table-wrapper-scroll-y">
             <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
                 <thead class="thead-custom">
@@ -44,5 +41,8 @@
         <div class="box-footer clearfix">
             <app-pagination [page]="page" (paginationEvent)="changePage($event)"></app-pagination>
         </div>
+        <app-botoes-lista (incluirEvent)="incluir()" (editarEvent)="editar()" (excluirEvent)="excluir()"
+            [selecionado]="!objetoSelecionado">
+        </app-botoes-lista>
     </form>
 </app-form-simples>

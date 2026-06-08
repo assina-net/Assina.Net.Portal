@@ -151,17 +151,25 @@ export class NovoUsuarioComponent extends PadraoNovoComponent {
     super.cancelar();
   }
 
+  voltar() {
+    this.router.navigate([this.rota], { replaceUrl: true });
+  }
+
   afterRetrieveData() {
 
     
     this.listCombos = this.entidade.listCombos;
+    let id = this.entidade.id;
+    let perfil = this.entidade.perfil ? this.entidade.perfil : PerfilEnum.toString(PerfilEnum.ROLE_USUARIO);
+    let status = this.entidade.status ? this.entidade.status : StatusEnum.ATIVO;
 
     
     this.entidade = {
+         id: id,
          usuario:  this.entidade.usuario,
          cliente: { id: this.shared.clienteSelecionado.cliente.id },
-         perfil: PerfilEnum.ROLE_USUARIO,
-         status: StatusEnum.ATIVO,
+         perfil: perfil,
+         status: status,
          perfilClienteSelecionado : this.shared.clienteSelecionado.perfil
     };
 
@@ -186,6 +194,10 @@ export class NovoUsuarioComponent extends PadraoNovoComponent {
 
 
   beforeSave() {
+    if (this.entidade && this.entidade.usuario) {
+      this.entidade.usuario.perfil = this.entidade.perfil;
+      this.entidade.usuario.status = this.entidade.status;
+    }
   }
 
   showHidePassword(tipo) {
@@ -202,7 +214,7 @@ export class NovoUsuarioComponent extends PadraoNovoComponent {
 
 
   perfilAdmin() {
-    return this.shared.perfilUsuario == 'ROLE_ADMIN';
+    return this.shared.perfilUsuarioAdmin();
   }
 
   PreencheDadosUsuario(usuario: any) {

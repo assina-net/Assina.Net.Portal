@@ -3,7 +3,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 @Component({
    selector: 'app-botoes-lista',
    template: `
-   <div class=" btn-group-justified btn-group-raised">
+   <div class="crud-actions btn-group-justified btn-group-raised">
       <ng-content select="[inicio]" ></ng-content>
       <button *ngIf="permiteIncluir" class="btn btn-raised btn-lg btn-primary mr-1" type="button" (click)="incluir()">
          <!--<i class="fa fa-plus"></i>-->Novo

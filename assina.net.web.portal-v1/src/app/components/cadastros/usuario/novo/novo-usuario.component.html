@@ -70,13 +70,13 @@
                         carateres
                     </small>
                 </div>
-                <div *ngIf="usuarioCliente && usuarioCliente.perfil && perfilAdmin()" class="col-md-6">
+                <div *ngIf="usuarioCliente && perfilAdmin()" class="col-md-6">
 
                     <label for="inputProfile" class="control-label">Perfil</label>
                     <select [(ngModel)]="usuarioCliente.perfil" class="form-control" name="perfil" id="inputProfile"
                         [ngStyle]="classUpperCase()" #perfil="ngModel" required>
-                        <option *ngFor="let opcao of opcoesPerfil" [value]="opcao.value">{{opcao.label}}</option>
-                        <option value="ROLE_ASSINADOR">ASSINADOR</option>
+                        <option [ngValue]="null">Selecione</option>
+                        <option *ngFor="let opcao of opcoesPerfil" [ngValue]="opcao.value">{{opcao.label}}</option>
                     </select>
                     <small class="form-text text-muted danger"
                         *ngIf="perfil.invalid && (perfil.dirty || perfil.touched)">Selecione o Perfil
@@ -87,7 +87,7 @@
             </div>
 
 
-            <div *ngIf="usuarioCliente && usuarioCliente.perfil && perfilAdmin()" class="row">
+            <div *ngIf="usuarioCliente && perfilAdmin()" class="row">
                 <div class="col-md-2">
                     <label for="inputStatus" class="control-label">Status</label>
                     <ui-switch [(ngModel)]="usuarioCliente.status" name="inputStatus" id="inputStatus" #status="ngModel" [ngStyle]="classUpperCase()"

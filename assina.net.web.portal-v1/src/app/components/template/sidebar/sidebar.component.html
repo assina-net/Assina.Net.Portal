@@ -24,11 +24,11 @@
     <div class="nav-container">
         <ul class="navigation">
             <!-- First level menu -->
-            <li *ngFor="let menuItem of menuItems" [ngClass]="[menuItem.class]"
+            <li *ngFor="let menuItem of menuItems" [ngClass]="[menuItem.class, menuItem.open ? 'open' : '']"
                 [routerLinkActive]="menuItem.submenu.length != 0 ? '' : 'active'"
                 [routerLinkActiveOptions]="{exact: true}">
                 <!-- <a [routerLink]="menuItem.class === '' ? [menuItem.path] : null" *ngIf="!menuItem.isExternalLink; else externalLinkBlock"> -->
-                <a href="#" (click)="false" *ngIf="!menuItem.isExternalLink; else externalLinkBlock" style="text-align: center;">
+                <a href="#" (click)="toggleMenu($event, menuItem, menuItems)" *ngIf="!menuItem.isExternalLink; else externalLinkBlock" style="text-align: center;">
                     <!--<i [ngClass]="[menuItem.icon]" style="color: skyblue; font-size: 16px;"></i>-->
                     <span class="menu-title primary">{{menuItem.title}}</span>
                     <span *ngIf="menuItem.badge != '' " [ngClass]="[menuItem.badgeClass]">{{menuItem.badge}}</span>
@@ -44,9 +44,10 @@
                 <ul class="menu-content" *ngIf="menuItem.submenu.length > 0">
                     <li *ngFor="let menuSubItem of menuItem.submenu"
                         [routerLinkActive]="menuSubItem.submenu.length > 0 ? '' : 'active'"
-                        [ngClass]="[menuSubItem.class]">
+                        [ngClass]="[menuSubItem.class, menuSubItem.open ? 'open' : '']">
 
                         <a [routerLink]="menuSubItem.submenu.length > 0 ? null : [menuSubItem.path]"
+                           (click)="menuSubItem.submenu.length > 0 ? toggleMenu($event, menuSubItem, menuItem.submenu) : null"
                            *ngIf="!menuSubItem.isExternalLink; else externalSubLinkBlock" style="text-align: center;">
                             <!-- <i [ngClass]="[menuSubItem.icon]"></i>-->
                             <span class="menu-subtitle">{{menuSubItem.title}}</span>

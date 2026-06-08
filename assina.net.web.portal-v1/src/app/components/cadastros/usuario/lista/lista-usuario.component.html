@@ -51,7 +51,7 @@
                         [ngClass]="legendaGrid(usuario)" (dblclick)="editar(false)">
                         <td>{{usuario.pessoa.nomeRazaoSocial}}</td>
                         <td>{{usuario.pessoa.email}}</td>
-                        <td>{{usuario.descPerfil | uppercase}}</td>
+                        <td>{{labelPerfil(usuario) | uppercase}}</td>
                         <td>{{usuario.descStatus | uppercase}}</td>
                     </tr>
                     <tr *ngIf="!listagem.length">

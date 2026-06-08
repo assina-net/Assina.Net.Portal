@@ -53,4 +53,25 @@ export class SidebarComponent implements OnInit {
         return;
     }
 
+    toggleMenu(event: Event, menuItem: any, siblings: any[]) {
+        if (!menuItem.submenu || menuItem.submenu.length === 0) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        menuItem.open = !menuItem.open;
+        siblings
+            .filter(item => item !== menuItem)
+            .forEach(item => this.closeMenu(item));
+    }
+
+    private closeMenu(menuItem: any) {
+        menuItem.open = false;
+        if (menuItem.submenu && menuItem.submenu.length > 0) {
+            menuItem.submenu.forEach(subMenu => this.closeMenu(subMenu));
+        }
+    }
+
 }

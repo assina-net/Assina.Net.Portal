@@ -25,11 +25,7 @@ export class ListaUsuarioComponent extends PadraoListaComponent {
 
 
         if (this.perfilEditar()) {
-            this.filtro = {
-                cliente: { id: this.shared.clienteSelecionado.cliente.id, pessoa: new Pessoa('', '', '', '', null, '', null) },
-                usuario: new Usuario('', '', '', '', StatusEnum.ATIVO, null, new Pessoa('', '', '', '', null, '', null), null, null),
-                status: StatusEnum.label(StatusEnum.ATIVO)
-            };
+            this.filtro = this.criaFiltroEdicao();
 
 
             this.page = {
@@ -65,18 +61,13 @@ export class ListaUsuarioComponent extends PadraoListaComponent {
     }
 
     clienteChange() {
-        if (this.filtro.perfilClienteSelecionado != this.shared.clienteSelecionado.perfil) {
-            if (this.perfilEditar()) {
-                this.filtro.cliente = { id: this.shared.clienteSelecionado.cliente.id, pessoa: new Pessoa('', '', '', '', null, '', null) };
-                this.filtro.usuario = new Usuario('', '', '', '', StatusEnum.ATIVO, null, new Pessoa('', '', '', '', null, '', null), null, null);
-                this.page.order = 'usuario.pessoa.nomeRazaoSocial,ASC'
-            } else {
-                this.filtro.cliente = null;
-                this.filtro.usuario = new Usuario(this.shared.usuario.id, '', '', '', StatusEnum.ATIVO, null, new Pessoa('', '', '', '', null, '', null), null, null),
-                    this.page.order = 'pessoa.nomeRazaoSocial,ASC'
-            }
-        } else if (this.perfilEditar()) {
-            this.filtro.cliente.id = this.shared.clienteSelecionado.cliente.id;
+        if (this.perfilEditar()) {
+            this.filtro = this.criaFiltroEdicao();
+            this.page.order = 'usuario.pessoa.nomeRazaoSocial,ASC'
+        } else {
+            this.filtro.cliente = null;
+            this.filtro.usuario = new Usuario(this.shared.usuario.id, '', '', '', StatusEnum.ATIVO, null, new Pessoa('', '', '', '', null, '', null), null, null);
+            this.page.order = 'pessoa.nomeRazaoSocial,ASC'
         }
 
         this.filtro.perfilClienteSelecionado = this.shared.clienteSelecionado.perfil;
@@ -86,8 +77,22 @@ export class ListaUsuarioComponent extends PadraoListaComponent {
     }
 
     perfilEditar() {
-        let result = PerfilEnum.parse(this.shared.clienteSelecionado.perfil) == PerfilEnum.ROLE_ADMIN;
-        return result;
+        return this.shared.perfilUsuarioAdmin();
+    }
+
+    private criaFiltroEdicao() {
+        let usuarioFiltro = new Usuario('', '', '', '', StatusEnum.ATIVO, null, new Pessoa('', '', '', '', null, '', null), null, null);
+
+        if (!this.shared.perfilUsuariSistema()) {
+            usuarioFiltro.id = this.shared.usuario.id;
+        }
+
+        return {
+            cliente: { id: this.shared.clienteSelecionado.cliente.id, pessoa: new Pessoa('', '', '', '', null, '', null) },
+            usuario: usuarioFiltro,
+            perfilClienteSelecionado: this.shared.clienteSelecionado.perfil,
+            status: StatusEnum.label(StatusEnum.ATIVO)
+        };
     }
 
     excluir() {
@@ -120,6 +125,14 @@ export class ListaUsuarioComponent extends PadraoListaComponent {
 
     classLowerCase() {
         return this.shared.classLowerCase;
+    }
+
+    labelPerfil(usuario: any) {
+        if (usuario && usuario.perfil) {
+            return PerfilEnum.label(PerfilEnum.parse(usuario.perfil));
+        }
+
+        return usuario ? usuario.descPerfil : '';
     }
 }
 

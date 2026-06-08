@@ -4,7 +4,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
    selector: 'app-botoes-cadastro',
    template: `
 
-   <div class="form-actions col-md-12 text-right clearfix modal-footer">
+   <div class="crud-actions form-actions col-md-12 text-right clearfix modal-footer">
       <ng-content select="[inicio]" ></ng-content>
       <button *ngIf="!consultando" type="submit" 
          class="{{cssCustom}} btn btn-lg btn-raised btn-primary mr-1" >
