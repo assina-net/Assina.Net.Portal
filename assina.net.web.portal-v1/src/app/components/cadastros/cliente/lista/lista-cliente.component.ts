@@ -70,6 +70,27 @@ export class ListaClienteComponent extends PadraoListaComponent {
         return this.shared.classLowerCase;
     }
 
+    labelPlano(cliente: any) {
+        if (!cliente || !cliente.plano) {
+            return '';
+        }
+
+        if (cliente.plano.nome) {
+            return cliente.plano.nome;
+        }
+
+        if (cliente.plano.descricao) {
+            return cliente.plano.descricao;
+        }
+
+        if (cliente.plano.identificacao) {
+            return cliente.plano.identificacao;
+        }
+
+        const plano = this.tipoPlanoList.find(x => x.item_id == cliente.plano.id);
+        return plano ? plano.item_text : '';
+    }
+
 }
 
 

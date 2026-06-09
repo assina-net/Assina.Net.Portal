@@ -68,10 +68,108 @@
     <img src="assets/img/aguarde.gif" class="loading-icon"/>
 </div>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<a href="https://api.whatsapp.com/send?phone=5519998313588&text=Olá,%20estou%20precisando%20de%20ajuda." style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
-  z-index:1000;" target="_blank">
+<a id="whatsapp-float" href="https://api.whatsapp.com/send?phone=5519998313588&text=Olá,%20estou%20precisando%20de%20ajuda." style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
+  z-index:1000; cursor: move; user-select: none; touch-action: none;" target="_blank">
     <i style="margin-top:16px" class="fa fa-whatsapp"></i>
 </a>
+<script>
+  (function () {
+    var storageKey = 'assinanet-whatsapp-position';
+    var button = null;
+    var dragging = false;
+    var moved = false;
+    var lastDragEnd = 0;
+    var offsetX = 0;
+    var offsetY = 0;
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function getPoint(event) {
+      return event.touches && event.touches.length ? event.touches[0] : event;
+    }
+
+    function setPosition(left, top) {
+      var maxLeft = window.innerWidth - button.offsetWidth - 8;
+      var maxTop = window.innerHeight - button.offsetHeight - 8;
+      left = clamp(left, 8, maxLeft);
+      top = clamp(top, 8, maxTop);
+      button.style.left = left + 'px';
+      button.style.top = top + 'px';
+      button.style.right = 'auto';
+      button.style.bottom = 'auto';
+      localStorage.setItem(storageKey, JSON.stringify({ left: left, top: top }));
+    }
+
+    function startDrag(event) {
+      if (event.type === 'mousedown' && event.button !== 0) {
+        return;
+      }
+      var point = getPoint(event);
+      var rect = button.getBoundingClientRect();
+      dragging = true;
+      moved = false;
+      offsetX = point.clientX - rect.left;
+      offsetY = point.clientY - rect.top;
+      event.preventDefault();
+    }
+
+    function moveDrag(event) {
+      if (!dragging) {
+        return;
+      }
+      var point = getPoint(event);
+      moved = true;
+      setPosition(point.clientX - offsetX, point.clientY - offsetY);
+      event.preventDefault();
+    }
+
+    function endDrag(event) {
+      if (dragging && moved) {
+        var point = getPoint(event);
+        if (point && point.clientX !== undefined) {
+          setPosition(point.clientX - offsetX, point.clientY - offsetY);
+        }
+        lastDragEnd = Date.now();
+      }
+      dragging = false;
+      moved = false;
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+      button = document.getElementById('whatsapp-float');
+      if (!button) {
+        return;
+      }
+
+      try {
+        var saved = JSON.parse(localStorage.getItem(storageKey));
+        if (saved) {
+          setPosition(saved.left, saved.top);
+        }
+      } catch (e) {
+      }
+
+      button.addEventListener('mousedown', startDrag);
+      button.addEventListener('touchstart', startDrag, { passive: false });
+      document.addEventListener('mousemove', moveDrag);
+      document.addEventListener('touchmove', moveDrag, { passive: false });
+      document.addEventListener('mouseup', endDrag);
+      document.addEventListener('touchend', endDrag);
+      button.addEventListener('click', function (event) {
+        if (Date.now() - lastDragEnd < 350) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      });
+      window.addEventListener('resize', function () {
+        var rect = button.getBoundingClientRect();
+        setPosition(rect.left, rect.top);
+      });
+    });
+  })();
+</script>
 </body>
 
 </html>

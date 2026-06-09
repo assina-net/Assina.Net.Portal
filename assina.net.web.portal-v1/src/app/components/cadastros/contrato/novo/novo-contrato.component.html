@@ -45,9 +45,8 @@
             </div>
 
             
-            <div>
-                <div>
-                    <br />
+            <fieldset class="contrato-detail-panel">
+                <legend>Arquivos</legend>
                     <app-complete-tab-form [content]="contratoDocumentoForm" [dados]="contratoDocumentoModal"
                         [dadosComplementares]="dadosComplementaresDocumento" [cols]="titulosDocumentos"
                         [showButtons]="!consultando" [novoRegistro]="'Novo Arquivo'"
@@ -72,14 +71,10 @@
                     <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
                         {{ message.text }}
                     </ngb-alert>
+            </fieldset>
 
-
-                </div>
-            </div>
-
-            <div *ngIf="contratoDocumentoModal.listagem.length > 0">
-                <div>
-                    <br />
+            <fieldset class="contrato-detail-panel" *ngIf="contratoDocumentoModal.listagem.length > 0">
+                <legend>Partes</legend>
                     <app-cadastro-parte-form [dados]="contratoParteModal" [contratoPapelList]="this.contratoPapelList"
                         [showButtons]="!consultando" (change)="adicionouContratoParte()"
                         [statusContrato]="ContratoRequest.contrato.statusContrato">
@@ -88,13 +83,10 @@
                     <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
                         {{ message.text }}
                     </ngb-alert>
+            </fieldset>
 
-                </div>
-            </div>
-
-            <div *ngIf="contratoDocumentoModal.listagem.length > 0 && mostraObservador()">
-                <div>
-                    <br />
+            <fieldset class="contrato-detail-panel" *ngIf="contratoDocumentoModal.listagem.length > 0 && mostraObservador()">
+                <legend>Observadores</legend>
                     <app-cadastro-parte-form [dados]="contratoObservadoresModal" [contratoPapelList]="[]"
                         [showButtons]="!consultando" (change)="adicionouObservador()"
                         [statusContrato]="ContratoRequest.contrato.statusContrato"
@@ -107,9 +99,7 @@
                     <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
                         {{ message.text }}
                     </ngb-alert>
-
-                </div>
-            </div>
+            </fieldset>
 
         </div>
         <div class="row">

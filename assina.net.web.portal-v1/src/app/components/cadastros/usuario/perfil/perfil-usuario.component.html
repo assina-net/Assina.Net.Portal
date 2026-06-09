@@ -87,7 +87,7 @@
             </div>
 
 
-            <div *ngIf="usuarioCliente && usuarioCliente.status && perfilAdmin()" class="row">
+            <div *ngIf="usuarioCliente && usuarioCliente.status != undefined && perfilAdmin()" class="row">
                 <div class="col-md-2">
                     <label for="inputStatus" class="control-label">Status</label>
                     <ui-switch [(ngModel)]="usuarioCliente.status" name="inputStatus" id="inputStatus" #status="ngModel" [ngStyle]="classUpperCase()"

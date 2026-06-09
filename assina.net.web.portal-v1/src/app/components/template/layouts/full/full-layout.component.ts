@@ -20,7 +20,7 @@ declare var $: any;
          <!--<div class="sidebar-background"></div>-->
       </div>
       <app-navbar #navbar></app-navbar>
-      <div class="main-panel panel-min" style="height: 0;">
+      <div class="main-panel panel-min">
          <div class="main-content" style="min-height: calc(100vh - 92px);">
                <div class="content-wrapper" style="padding:0 8px !important;">
                   <div class="container-fluid" style="padding:0 8px !important;">

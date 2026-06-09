@@ -10,7 +10,7 @@
                 [mostrarSistema]="true">
             </combo-pessoa-cliente>
         </div>
-        <div class="table-responsive table-border-style table-wrapper-scroll-x table-wrapper-scroll-y rounded  infinite-scroll" infiniteScroll
+        <div class="table-responsive table-border-style table-wrapper-scroll-x table-wrapper-scroll-y rounded infinite-scroll usuario-list-scroll" infiniteScroll
         [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [fromRoot]="true"
         [infiniteScrollContainer]="'.infinite-scroll'">
             <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
@@ -61,12 +61,12 @@
 
             </table>
         </div>
-        <div class="text-right col-md-12 m-1">
-
+        <div class="row m-1 crud-actions usuario-list-actions">
+            <div class="col-md-12 text-right">
             <app-botoes-lista [permiteIncluir]="perfilEditar" [permiteExcluir]="perfilEditar" (incluirEvent)="incluir()"
                 (editarEvent)="editar()" (excluirEvent)="excluir()" [selecionado]="!objetoSelecionado">
             </app-botoes-lista>
-
+            </div>
         </div>
         <div class="box-footer clearfix">
             <!-- <app-pagination [page]="page" (paginationEvent)=changePage($event)></app-pagination>-->

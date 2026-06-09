@@ -191,7 +191,7 @@ export class PerfilUsuarioComponent extends PadraoNovoComponent {
 
   carregaDadosEntidade(){
     this.cpfAnterior = this.entidade.usuario.pessoa.cpfCnpj;
-    this.entidade.status = StatusEnum.parse(this.entidade.status);
+    this.entidade.status = this.normalizaStatus(this.entidade.status);
     this.entidade.perfilClienteSelecionado = this.shared.clienteSelecionado.perfil;
 
     if ( this.entidade.usuario.pessoa.pessoaTelefone != undefined)
@@ -201,6 +201,11 @@ export class PerfilUsuarioComponent extends PadraoNovoComponent {
 
 
   beforeSave() {
+    if (this.entidade && this.entidade.usuario) {
+      this.entidade.status = this.normalizaStatus(this.entidade.status);
+      this.entidade.usuario.perfil = this.entidade.perfil;
+      this.entidade.usuario.status = this.entidade.status;
+    }
   }
 
   showHidePassword(tipo) {
@@ -269,6 +274,10 @@ export class PerfilUsuarioComponent extends PadraoNovoComponent {
   
   classLowerCase() {
     return this.shared.classLowerCase;
+  }
+
+  private normalizaStatus(status: any): StatusEnum {
+    return StatusEnum.booltoEnum(status);
   }
   
 }

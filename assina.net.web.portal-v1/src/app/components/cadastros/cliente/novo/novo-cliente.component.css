@@ -1,0 +1,58 @@
+.cliente-detail-panel {
+   border: 1px solid #a6a9ae;
+   border-radius: 0.25rem;
+   margin: 0.55rem 0 0;
+   padding: 0.45rem 0.45rem 0.35rem;
+}
+
+.cliente-detail-panel legend {
+   color: #595959;
+   font-size: 0.9rem;
+   font-weight: 600;
+   line-height: 1;
+   margin: 0;
+   padding: 0 0.35rem;
+   width: auto;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form .form-body {
+   padding: 0;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form .form-section {
+   padding: 0;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form .btn-group {
+   margin-bottom: 0.35rem;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form button.btn {
+   background-color: #7edba0 !important;
+   border-color: #7edba0 !important;
+   color: #ffffff !important;
+   font-size: 0.9rem;
+   line-height: 1.1;
+   padding: 0.45rem 0.8rem;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form button.btn:hover,
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form button.btn:focus {
+   background-color: #67c98b !important;
+   border-color: #67c98b !important;
+   color: #ffffff !important;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form button.btn .fa {
+   font-size: 1rem;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form table th {
+   padding-bottom: 0.45rem;
+   padding-top: 0.45rem;
+}
+
+:host ::ng-deep .cliente-detail-panel app-complete-tab-form .table td {
+   padding-bottom: 0.35rem;
+   padding-top: 0.35rem;
+}

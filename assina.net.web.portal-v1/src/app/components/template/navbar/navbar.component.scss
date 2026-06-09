@@ -2,6 +2,26 @@ i {color:white;}
 li {margin: 5px; }
 .dropdown-toggle::after {
     color: white;}
+
+:host {
+    display: block;
+    overflow: visible;
+    position: relative;
+    z-index: 1000;
+}
+
+:host ::ng-deep .header-navbar,
+:host ::ng-deep .header-navbar .container-fluid,
+:host ::ng-deep .navbar-container,
+:host ::ng-deep #navbarSupportedContent,
+:host ::ng-deep .navbar-nav,
+:host ::ng-deep .nav-item {
+    overflow: visible !important;
+}
+
+:host ::ng-deep .dropdown-menu {
+    z-index: 1050;
+}
     
     @media (max-width: 992px) {
     .navbar-nav > li {

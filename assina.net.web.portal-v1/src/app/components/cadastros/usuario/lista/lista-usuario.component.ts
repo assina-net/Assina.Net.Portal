@@ -60,6 +60,10 @@ export class ListaUsuarioComponent extends PadraoListaComponent {
         super.filtrar();
     }
 
+    findAll(pageable, filtro: any) {
+        super.findAll(pageable, this.criaFiltroRequest(filtro));
+    }
+
     clienteChange() {
         if (this.perfilEditar()) {
             this.filtro = this.criaFiltroEdicao();
@@ -93,6 +97,16 @@ export class ListaUsuarioComponent extends PadraoListaComponent {
             perfilClienteSelecionado: this.shared.clienteSelecionado.perfil,
             status: StatusEnum.label(StatusEnum.ATIVO)
         };
+    }
+
+    private criaFiltroRequest(filtro: any) {
+        const filtroRequest = JSON.parse(JSON.stringify(filtro));
+
+        if (filtroRequest.usuario) {
+            filtroRequest.usuario.status = null;
+        }
+
+        return filtroRequest;
     }
 
     excluir() {

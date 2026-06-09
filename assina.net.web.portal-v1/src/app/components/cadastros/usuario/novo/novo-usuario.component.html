@@ -100,9 +100,8 @@
                 </div>
             </div>
 
-            <div>
-                <div>
-                    <br />
+            <fieldset class="usuario-detail-panel">
+                <legend>Telefones</legend>
                     <app-complete-tab-form [content]="pessoaTelefoneModal" [dados]="telefones" [cols]="titulosTelefone"
                         [dadosComplementares]="dadosComplementaresTelefone" [showButtons]="true" [large]="false"
                         [novoRegistro]="'Novo Telefone'" [mensagemExclusao]="'Deseja excluir o telefone ? '"
@@ -113,10 +112,7 @@
                             <td>{{item.complemento}}</td>
                         </ng-template>
                     </app-complete-tab-form>
-
-
-                </div>
-            </div>
+            </fieldset>
             
             <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
                 {{ message.text }}

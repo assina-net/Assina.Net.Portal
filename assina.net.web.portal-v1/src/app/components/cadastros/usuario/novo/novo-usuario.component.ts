@@ -161,7 +161,7 @@ export class NovoUsuarioComponent extends PadraoNovoComponent {
     this.listCombos = this.entidade.listCombos;
     let id = this.entidade.id;
     let perfil = this.entidade.perfil ? this.entidade.perfil : PerfilEnum.toString(PerfilEnum.ROLE_USUARIO);
-    let status = this.entidade.status ? this.entidade.status : StatusEnum.ATIVO;
+    let status = this.entidade.status != undefined ? this.normalizaStatus(this.entidade.status) : StatusEnum.ATIVO;
 
     
     this.entidade = {
@@ -178,7 +178,7 @@ export class NovoUsuarioComponent extends PadraoNovoComponent {
     //this.entidade.perfil = this.shared.perfilUsuario;
     this.entidade.senha = '';
     this.cpfAnterior = this.entidade.usuario.pessoa.cpfCnpj;
-    this.entidade.status = StatusEnum.parse(this.entidade.status);
+    this.entidade.status = this.normalizaStatus(this.entidade.status);
     this.entidade.perfilClienteSelecionado = this.shared.clienteSelecionado.perfil;
 
     if ( this.entidade.usuario.pessoa.pessoaTelefone != undefined)
@@ -195,6 +195,7 @@ export class NovoUsuarioComponent extends PadraoNovoComponent {
 
   beforeSave() {
     if (this.entidade && this.entidade.usuario) {
+      this.entidade.status = this.normalizaStatus(this.entidade.status);
       this.entidade.usuario.perfil = this.entidade.perfil;
       this.entidade.usuario.status = this.entidade.status;
     }
@@ -266,5 +267,9 @@ export class NovoUsuarioComponent extends PadraoNovoComponent {
 
   classLowerCase() {
     return this.shared.classLowerCase;
+  }
+
+  private normalizaStatus(status: any): StatusEnum {
+    return StatusEnum.booltoEnum(status);
   }
 }

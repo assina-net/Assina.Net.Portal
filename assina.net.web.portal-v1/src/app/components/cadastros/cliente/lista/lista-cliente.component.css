@@ -1,0 +1,15 @@
+:host ::ng-deep .cliente-col-plano {
+   min-width: 270px;
+   white-space: nowrap;
+}
+
+:host ::ng-deep td.cliente-col-plano {
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+:host ::ng-deep .cliente-col-status {
+   min-width: 95px;
+   width: 95px;
+   white-space: nowrap;
+}

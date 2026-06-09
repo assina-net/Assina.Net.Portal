@@ -1,0 +1,8 @@
+:host ::ng-deep .usuario-list-scroll {
+   max-height: calc(100vh - 265px);
+}
+
+:host ::ng-deep .usuario-list-actions {
+   margin-bottom: -0.35rem !important;
+   margin-top: 0 !important;
+}

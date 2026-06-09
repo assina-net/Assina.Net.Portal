@@ -25,7 +25,7 @@
                                 </option>
                             </select>
                         </th>
-                        <th width="200px"><a sortable-column="plano">Plano</a>
+                        <th width="270px" class="cliente-col-plano"><a sortable-column="plano">Plano</a>
                             <select class="form-control" [(ngModel)]="filtro.plano.id" id="plano"
                                     [ngStyle]="classUpperCase()" name="plano" (ngModelChange)="filtrando()">
                                 <option [ngValue]="null">Todos</option>
@@ -33,7 +33,7 @@
                                 </option>
                             </select>
                         </th>
-                        <th width="200px"><a sortable-column="status">Status</a>
+                        <th width="95px" class="cliente-col-status"><a sortable-column="status">Status</a>
                             <select class="form-control" [(ngModel)]="filtro.status" id="status" name="status"
                                 [ngStyle]="classUpperCase()" (ngModelChange)="filtrando()">
                                 <option [ngValue]="null">Selecione</option>
@@ -49,7 +49,8 @@
                         <td>{{cliente.pessoa.nomeRazaoSocial}}</td>
                         <td>{{cliente.pessoa.email}}</td>
                         <td>{{cliente.segmento.nome}}</td>
-                        <td>{{cliente.descStatus}}</td>
+                        <td class="cliente-col-plano" [title]="labelPlano(cliente)">{{labelPlano(cliente)}}</td>
+                        <td class="cliente-col-status">{{cliente.descStatus}}</td>
                     </tr>
                     <tr *ngIf="!listagem.length">
                         <td colspan="5">Nenhum registro encontrado</td>

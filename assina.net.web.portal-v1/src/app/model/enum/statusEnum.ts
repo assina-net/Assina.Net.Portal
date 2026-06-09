@@ -23,15 +23,14 @@ export namespace StatusEnum {
    }
 
    export function booltoEnum(status: any): StatusEnum {
-      if (Boolean(status) === true) {
+      if (status === StatusEnum.ATIVO || status === true || status === 'true' || status === 'ATIVO' || status === '1' || status === 1) {
          return StatusEnum.ATIVO;
-      } else {
-         return StatusEnum.INATIVO
       }
+      return StatusEnum.INATIVO;
    }
 
    export function enumToBool(status: any): any {
-      return parse(status) === StatusEnum.ATIVO;
+      return booltoEnum(status) === StatusEnum.ATIVO;
    }
 
 }

@@ -1,5 +1,29 @@
 @import "../../../assets/sass/scss/gradient-variables";
 
+:host {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.dashboard-home {
+    height: calc(100vh - 112px);
+    max-width: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+.dashboard-home img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+    width: 100%;
+}
+
+.dashboard-home .mobile {
+    margin-top: 0.75rem;
+}
+
 :host ::ng-deep .ct-grid{
     stroke-dasharray: 0px;
     stroke: rgba(0, 0, 0, 0.1);

@@ -34,8 +34,8 @@
             <div class="row">
                 <div class="col-md-7">
                     <label for="inputNumero" class="control-label">Número</label>
-                    <input type="phone" [(ngModel)]="telefoneEdit.numero" name="numero" [ngStyle]="classUpperCase()"
-                        class="form-control" id="inputNumero" maxlength="11" minlength="10" #numero="ngModel"
+                    <input type="tel" [(ngModel)]="telefoneEdit.numero" name="numero" [ngStyle]="classUpperCase()"
+                        class="form-control" id="inputNumero" mask="(00) 0000-00009" minlength="10" #numero="ngModel"
                         placeholder="Informe" required>
                     <small class="form-text text-muted danger"
                         *ngIf="numero.errors?.required && (numero.dirty || numero.touched)">Informe o Número
