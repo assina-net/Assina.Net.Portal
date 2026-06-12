@@ -52,7 +52,8 @@
                         [showButtons]="!consultando" [novoRegistro]="'Novo Arquivo'"
                         [mensagemExclusao]="'Deseja excluir o documento ? '" [permiteEditar]="false"
                         [viewerDoc]="contratoDocumentoVisualizarForm" [permiteExibirDocumento]="true"
-                        (change)="adicionouContratoDocumento()" [itemTemplate]="detalheArquivo">
+                        [retornaListaCompleta]="true" (change)="adicionouContratoDocumento()"
+                        [itemTemplate]="detalheArquivo">
                         <ng-template #detalheArquivo let-item>
                             <td>{{item.nomeDocumento}}</td>
                             <td>{{item.tipoDocumento.nome}}</td>
@@ -75,7 +76,7 @@
 
             <fieldset class="contrato-detail-panel" *ngIf="contratoDocumentoModal.listagem.length > 0">
                 <legend>Partes</legend>
-                    <app-cadastro-parte-form [dados]="contratoParteModal" [contratoPapelList]="this.contratoPapelList"
+                    <app-cadastro-parte-form [dados]="contratoParteModal" [contratoPapelList]="contratoPapelListDocumentos"
                         [showButtons]="!consultando" (change)="adicionouContratoParte()"
                         [statusContrato]="ContratoRequest.contrato.statusContrato">
                     </app-cadastro-parte-form>

@@ -15,6 +15,7 @@ export class SharedService {
     clienteSelecionado: any = { cliente: { id: "", segmento: { id: "", identificacao: "" } } };
     perfilUsuario: string;
     clientes: any;
+    sessaoExpirada: boolean = false;
 
 
     protected utilService: UtilService;

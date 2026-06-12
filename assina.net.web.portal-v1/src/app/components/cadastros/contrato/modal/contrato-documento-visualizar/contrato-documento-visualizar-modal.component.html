@@ -3,15 +3,19 @@
         <app-modal-simples [titulo]="'Cadastro > Contrato > Documentos > Visualizar'">
 
             <label class="control-label">{{documento.nomeDocumento}}</label>
-            <div style="height:500px">
+            <div class="document-preview-area">
                 <!--<ng2-pdfjs-viewer #pdfViewer viewerId="inline" [print]="true" [fullScreen]="false" [find]="false"></ng2-pdfjs-viewer>-->
-                <pdf-viewer src="{{documentoPDF}}" original-size="true" show-all="false" [autoresize]="true"
+                <pdf-viewer [hidden]="message || carregando || !documentoPDF" src="{{documentoPDF}}" original-size="true" show-all="false" [autoresize]="true"
                     [fit-to-page]='true' [render-text]='false'></pdf-viewer>
-            </div>
 
-            <ngb-alert *ngIf="message" type="{{message.type}}" (close)="message = null">
-                {{ message.text }}
-            </ngb-alert>
+                <div *ngIf="carregando" class="document-preview-state">
+                    Carregando documento...
+                </div>
+
+                <ngb-alert *ngIf="message" type="{{message.type}}" class="document-preview-message" (close)="message = null">
+                    {{ message.text }}
+                </ngb-alert>
+            </div>
 
         </app-modal-simples>
     </div>

@@ -1,1 +1,33 @@
 @import "../../../../../../assets/sass/modal.scss";
+
+.representantes-panel {
+    border: 1px solid #a6a6a5;
+    border-radius: 4px;
+    margin-top: 14px;
+    padding: 10px 10px 8px;
+}
+
+.representantes-panel legend {
+    color: #555;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    padding: 0 6px;
+    width: auto;
+}
+
+:host ::ng-deep .representantes-panel .form-section {
+    border-bottom: 0;
+    margin-bottom: 0.25rem !important;
+}
+
+:host ::ng-deep .representantes-panel .btn-group {
+    margin-bottom: 0.25rem;
+}
+
+:host ::ng-deep .representantes-panel button.btn {
+    background-color: #78d99a !important;
+    border-color: #78d99a !important;
+    font-size: 0.9rem;
+    padding: 0.45rem 0.8rem;
+}

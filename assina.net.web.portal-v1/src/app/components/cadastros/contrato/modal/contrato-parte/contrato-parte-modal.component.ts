@@ -34,7 +34,7 @@ export class ContratoParteModalComponent implements OnInit {
 
     contratoParteContatoForm = ContratoParteModalComponent;
     contatos: IDadosLista = { listagem: [], dirty: false };
-    titulosPartesContato = ['Ação', 'Nome', 'CPF', 'E-mail', 'Assinaturas'];
+    titulosPartesContato = ['Ação', 'Representante', 'CPF', 'E-mail', 'Assina como'];
 
 
     dropdownList = [];
@@ -96,11 +96,23 @@ export class ContratoParteModalComponent implements OnInit {
     }
 
     SelecionaPapeis(papel: any) {
+        if (!papel) {
+            return;
+        }
+
         papel.forEach(value => {
-            let pesquisa = this._dadosComplementares.comboContratoPapel.filter(p => p.id == value.papel.id);
+            const papelSelecionado = this.getPapel(value);
+            if (!papelSelecionado) {
+                return;
+            }
+
+            let pesquisa = this.comboContratoPapel.filter(p => p.id == papelSelecionado.id);
             if (pesquisa.length > 0) {
-                let item = { item_id: value.papel.id, item_text: value.papel.nome };
-                this.selectedItems.push(item);
+                const itemJaSelecionado = this.selectedItems.find(item => item.item_id == papelSelecionado.id);
+                if (!itemJaSelecionado) {
+                    let item = { item_id: papelSelecionado.id, item_text: papelSelecionado.nome };
+                    this.selectedItems.push(item);
+                }
             }
         })
     }
@@ -144,8 +156,11 @@ export class ContratoParteModalComponent implements OnInit {
                 let listaPapel = [];
 
                 item.papel.forEach(pap => {
-                    let itemPapel = { id: "", papel: pap.papel }
-                    listaPapel.push(itemPapel);
+                    const papel = this.getPapel(pap);
+                    if (papel && this.papelPermitido(papel.id)) {
+                        let itemPapel = { id: "", papel: papel }
+                        listaPapel.push(itemPapel);
+                    }
                 });
 
                 if (item.pessoaFisica.pessoaTelefone != null) {
@@ -159,20 +174,22 @@ export class ContratoParteModalComponent implements OnInit {
                 if (lstCelular.length > 0)
                     celular = lstCelular[0].numero;
 
-                let itemContato = {
-                    id: "",
-                    status: "ATIVO",
-                    idPessoa: item.pessoaFisica.id,
-                    tipoPessoa: item.pessoaFisica.tipoPessoa,
-                    cpfCnpj: item.pessoaFisica.cpfCnpj,
-                    nomeRazaoSocial: item.pessoaFisica.nomeRazaoSocial, email: item.pessoaFisica.email,
-                    celular: celular,
-                    requisitoAssinatura: "",
-                    papel: listaPapel
-                    //contrato: { statusContrato: this.parte.contrato.statusContrato }
-                };
+                if (listaPapel.length > 0) {
+                    let itemContato = {
+                        id: "",
+                        status: "ATIVO",
+                        idPessoa: item.pessoaFisica.id,
+                        tipoPessoa: item.pessoaFisica.tipoPessoa,
+                        cpfCnpj: item.pessoaFisica.cpfCnpj,
+                        nomeRazaoSocial: item.pessoaFisica.nomeRazaoSocial, email: item.pessoaFisica.email,
+                        celular: celular,
+                        requisitoAssinatura: "",
+                        papel: listaPapel
+                        //contrato: { statusContrato: this.parte.contrato.statusContrato }
+                    };
 
-                listagem2.push(itemContato);
+                    listagem2.push(itemContato);
+                }
 
             })
 
@@ -230,7 +247,7 @@ export class ContratoParteModalComponent implements OnInit {
     get dadosComplementares() {
         let dadosComplementares = {
             comboPreRequisito: this.partes,
-            comboContratoPapel: this._dadosComplementares.comboContratoPapel,
+            comboContratoPapel: this.comboContratoPapel,
             dropdownList: this.dropdownList
         }
         return dadosComplementares;
@@ -241,6 +258,7 @@ export class ContratoParteModalComponent implements OnInit {
         this._dadosComplementares = dadosComplementares;
 
         if (dadosComplementares.comboContratoPapel != undefined) {
+            this.dropdownList = [];
             dadosComplementares.comboContratoPapel.forEach(opcao => {
                 this.dropdownList.push({ item_id: opcao.id, item_text: opcao.label })
             });
@@ -250,6 +268,8 @@ export class ContratoParteModalComponent implements OnInit {
         if (dadosComplementares.dropdownList != undefined) {
             this.dropdownList = dadosComplementares.dropdownList
         }
+
+        this.selectedItems = this.selectedItems.filter(item => this.papelPermitido(item.item_id));
 
         this.alterouCpfCNPJ();
     }
@@ -276,7 +296,7 @@ export class ContratoParteModalComponent implements OnInit {
                 });
             }
             if (!achou) {
-                this._dadosComplementares.comboContratoPapel.forEach(value => {
+                this.comboContratoPapel.forEach(value => {
                     if (papel.item_id == value.id) {
                         lstPapel.push({ id: "", papel: { id: value.id, nome: value.label, descricao: value.label } });
                         return;
@@ -286,6 +306,11 @@ export class ContratoParteModalComponent implements OnInit {
         })
 
         this.parte.papel = lstPapel;
+    }
+
+    representantesValidos() {
+        return this.parte.tipoPessoa != 'JURIDICA' ||
+            (this.contatos && this.contatos.listagem && this.contatos.listagem.length > 0);
     }
 
     classUpperCase() {
@@ -303,6 +328,31 @@ export class ContratoParteModalComponent implements OnInit {
         } else {
             return false;
         }
+    }
+
+    private get comboContratoPapel() {
+        return this._dadosComplementares && this._dadosComplementares.comboContratoPapel ?
+            this._dadosComplementares.comboContratoPapel : [];
+    }
+
+    private papelPermitido(papelId) {
+        return this.comboContratoPapel.some(papel => papel.id == papelId);
+    }
+
+    private getPapel(item) {
+        if (!item) {
+            return null;
+        }
+
+        const papel = item.papel ? item.papel : item;
+        if (!papel || !papel.id) {
+            return null;
+        }
+
+        return {
+            id: papel.id,
+            nome: papel.nome || papel.label || papel.descricao || papel.identificacao || "Papel"
+        };
     }
 
 

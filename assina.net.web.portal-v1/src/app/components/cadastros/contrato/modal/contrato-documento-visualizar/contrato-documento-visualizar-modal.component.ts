@@ -25,6 +25,7 @@ export class ContratoDocumentoVisualizarModalComponent implements OnInit {
     documentoPDF: any = {};
     byteArray: Uint8Array;
     message: IAlert;
+    carregando = false;
 
     protected errorHandler: ErrorHandlerService;
     protected shared: SharedService;
@@ -41,12 +42,14 @@ export class ContratoDocumentoVisualizarModalComponent implements OnInit {
         if (this.instance) {
             this.documento = this.instance;
             if (this.documento.documento == null) {
+                this.carregando = true;
                 this.buscaPDF();
             } else {
                 this.pdfInit({ documentoPDF: this.documento.documento})
             }
         } else {
             this.documento = "";
+            this.carregando = false;
         }
 
     }
@@ -58,14 +61,40 @@ export class ContratoDocumentoVisualizarModalComponent implements OnInit {
         this.byteArray = new Uint8Array(atob(documentoPDFDescompactado).split('').map(char => char.charCodeAt(0)));
         this.pdfViewer.pdfSrc = this.byteArray; // pdfSrc can be Blob or Uint8Array
         this.pdfViewer.refresh(); // Ask pdf viewer to load/reresh pdf
+        this.carregando = false;
     }
 
     buscaPDF() {
         this.contratoService.getDocumentoPDF(this.documento).subscribe((responseApi: ResponseApi) => {
-            this.pdfInit(responseApi)
+            this.carregando = false;
+            const mensagemApi = this.getMensagemApi(responseApi);
+            if (mensagemApi) {
+                this.showMessage({
+                    type: 'warning',
+                    text: mensagemApi
+                });
+                return;
+            }
+            this.pdfInit(responseApi.data)
         }, err => {
+            this.carregando = false;
+            const mensagemApi = this.getMensagemApi(err && err.error);
+            if (mensagemApi || (err && err.status == 401)) {
+                this.showMessage({
+                    type: 'warning',
+                    text: mensagemApi || 'Sua sessão expirou. Faça login novamente.'
+                });
+                return;
+            }
             this.errorHandler.handle(err);
         });
+        return null;
+    }
+
+    private getMensagemApi(responseApi: ResponseApi): string {
+        if (responseApi && responseApi.errors && responseApi.errors.length) {
+            return responseApi.errors[responseApi.errors.length - 1];
+        }
         return null;
     }
 

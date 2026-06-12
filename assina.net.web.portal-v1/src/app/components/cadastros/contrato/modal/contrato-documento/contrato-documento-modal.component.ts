@@ -29,6 +29,7 @@ export class ContratoDocumentoModalComponent implements OnInit {
 
     tipoDocumentoList = [];
     dropdownList = [];
+    arrastandoArquivo = false;
 
     dropdownSettings = {};
     _dadosComplementares: any
@@ -45,12 +46,7 @@ export class ContratoDocumentoModalComponent implements OnInit {
     }
 
     ngOnInit() {
-        if (this.instance) {
-            this.documento = this.instance;
-        } else {
-            this.documento = [];
-            this.resetTela();
-        }
+        this.documento = Array.isArray(this.instance) ? this.instance : [];
 
         this.dropdownSettings = {
             singleSelection: false,
@@ -62,6 +58,8 @@ export class ContratoDocumentoModalComponent implements OnInit {
             enableCheckAll: false
 
         };
+
+        this.resetTela();
 
     }
 
@@ -83,11 +81,16 @@ export class ContratoDocumentoModalComponent implements OnInit {
 
     uploadArquivo(event) {
 
-        var files = event.target.files;
+        var files = event.target && event.target.files ? event.target.files : event.dataTransfer.files;
         var lstPapel = [];
 
+        if (event.preventDefault) {
+            event.preventDefault();
+        }
+
+        this.arrastandoArquivo = false;
         this.message = null;
-        if (this.tela.tipoDocumento.length == 0) {
+        if (!this.tela.tipoDocumento) {
             this.message = {
                 type: 'danger',
                 text: "Escolha o tipo de documento"
@@ -117,8 +120,8 @@ export class ContratoDocumentoModalComponent implements OnInit {
 
         let resultTipoDocumento = this._dadosComplementares.combotipoDocumento.find(tipoDocumento => tipoDocumento.id === this.tela.tipoDocumento);
         let erro = false;
-        for (var i = 0; i < event.target.files.length; i++) {
-            this.utilService.getFile(event.target.files[i]).then((data) => {
+        for (var i = 0; i < files.length; i++) {
+            this.utilService.getFile(files[i]).then((data) => {
                 let documento = {
                     documento: LZString["compressToUTF16"](this.utilService.byteArrayToBase64(data['bytes'])),
                     nomeDocumento: data['fileName'],
@@ -150,6 +153,26 @@ export class ContratoDocumentoModalComponent implements OnInit {
                 this.resetTela();
             });
         }
+
+        if (event.target && event.target.value) {
+            event.target.value = "";
+        }
+    }
+
+    onDragOver(event) {
+        event.preventDefault();
+        if (!this.liberadoUpload) {
+            this.arrastandoArquivo = true;
+        }
+    }
+
+    onDragLeave(event) {
+        event.preventDefault();
+        this.arrastandoArquivo = false;
+    }
+
+    onDropArquivo(event) {
+        this.uploadArquivo(event);
     }
 
 
@@ -198,7 +221,7 @@ export class ContratoDocumentoModalComponent implements OnInit {
     }
 
     get liberadoUpload() {
-        return this.tela.papel.length == 0;
+        return !this.tela.papel || this.tela.papel.length == 0;
     }
 
     salvar() {

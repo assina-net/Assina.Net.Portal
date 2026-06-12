@@ -57,27 +57,35 @@
 
                 <div class="row" *ngIf="parte.tipoPessoa=='JURIDICA'">
                     <div class="col-md-12">
-                        <br />
-                        <app-complete-tab-form [content]="contratoParteContatoForm" [dados]="contratoParteContatoModal"
-                            [dadosComplementares]="dadosComplementares" [cols]="titulosPartesContato"
-                            [showButtons]="!consultando" (change)="adicionouContratoContatoParte()"
-                            [novoRegistro]="'Nova Parte'"
-                            [mensagemExclusao]="'Deseja retirar este contato para assinatura ? '"
-                            [itemTemplate]="detalheParteContato"
-                            [tituloModal]="titulo">
-                            <ng-template #detalheParteContato let-item>
-                                <td>{{item.nomeRazaoSocial}}</td>
-                                <td>{{item.cpfCnpj}}</td>
-                                <td>{{item.email}}</td>
-                                <td>
-                                    <div *ngFor="let papel of item.papel" style="display: inline-table">
-                                        <span style="display: inline-flex;font-size: x-small;">
-                                            <span style="margin-left:5px">{{papel.papel.nome}}</span>
-                                        </span>
-                                    </div>
-                                </td>
-                            </ng-template>
-                        </app-complete-tab-form>
+                        <fieldset class="representantes-panel">
+                            <legend>Representantes da empresa</legend>
+                            <app-complete-tab-form [content]="contratoParteContatoForm" [dados]="contratoParteContatoModal"
+                                [dadosComplementares]="dadosComplementares" [cols]="titulosPartesContato"
+                                [showButtons]="!consultando" (change)="adicionouContratoContatoParte()"
+                                [novoRegistro]="'Novo Representante'"
+                                [mensagemExclusao]="'Deseja retirar este representante da assinatura ? '"
+                                [itemTemplate]="detalheParteContato"
+                                [tituloModal]="'Cadastro > Contrato > Representante da empresa'">
+                                <ng-template #detalheParteContato let-item>
+                                    <td>{{item.nomeRazaoSocial}}</td>
+                                    <td>{{item.cpfCnpj}}</td>
+                                    <td>{{item.email}}</td>
+                                    <td>
+                                        <div *ngFor="let papel of item.papel" style="display: inline-table">
+                                            <span style="display: inline-flex;font-size: x-small;">
+                                                <span style="margin-left:5px">{{papel.papel.nome}}</span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </ng-template>
+                            </app-complete-tab-form>
+                        </fieldset>
+                        <input type="hidden" name="representantesEmpresa"
+                            [ngModel]="representantesValidos() ? 'OK' : ''" required #representantesEmpresa="ngModel">
+                        <small class="form-text text-muted danger"
+                            *ngIf="representantesEmpresa.invalid && (representantesEmpresa.dirty || representantesEmpresa.touched)">
+                            Informe ao menos um representante para assinar pela empresa
+                        </small>
                     </div>
                 </div>
 

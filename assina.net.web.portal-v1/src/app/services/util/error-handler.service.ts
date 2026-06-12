@@ -1,9 +1,11 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { ResponseApi } from "app/model/util/response-api";
 import { NgxSpinnerService } from "ngx-spinner";
 import { isNullOrUndefined } from "util";
 import { DialogService } from "./dialog.service";
+import { SharedService } from "./shared.service";
 
 @Injectable()
 export class ErrorHandlerService {
@@ -11,10 +13,15 @@ export class ErrorHandlerService {
    constructor(
       private dialog: DialogService,
       private loading: NgxSpinnerService,
+      private router: Router,
    ) { }
 
    handle(errorResponse: any) {
       this.loading.hide();
+
+      if (this.deveIgnorarErroSessaoExpirada(errorResponse)) {
+         return;
+      }
 
       let msg: string;
       let erro: ResponseApi = errorResponse['error'];
@@ -51,6 +58,15 @@ export class ErrorHandlerService {
       }
 
       this.dialog.error(msg);
+   }
+
+   private deveIgnorarErroSessaoExpirada(errorResponse: any) {
+      if (!(errorResponse instanceof HttpErrorResponse) || errorResponse.status !== 401) {
+         return false;
+      }
+
+      const shared = SharedService.getInstance();
+      return shared.sessaoExpirada || this.router.url.indexOf('/login') >= 0;
    }
 
 }

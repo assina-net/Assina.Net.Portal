@@ -22,7 +22,7 @@ export class ContratoService extends HttpService {
     }
 
     getDocumentoPDF(documento: any): Observable<any> {
-        let response = this.http.post(this.getApiUrl() + "/documentoPdf", documento).pipe(map(response => response['data']));
+        let response = this.http.post(this.getApiUrl() + "/documentoPdf", documento);
         return response;
     }
 

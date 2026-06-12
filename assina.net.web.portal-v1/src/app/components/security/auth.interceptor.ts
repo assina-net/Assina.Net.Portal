@@ -6,6 +6,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { EMPTY, Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { DialogService } from 'app/services/util/dialog.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -16,7 +17,8 @@ export class AuthInterceptor implements HttpInterceptor {
    constructor(
       private router: Router,
       private dialog: DialogService,
-      private loading: NgxSpinnerService
+      private loading: NgxSpinnerService,
+      private modalService: NgbModal
    ) {
       this.shared = SharedService.getInstance();
    }
@@ -63,9 +65,22 @@ export class AuthInterceptor implements HttpInterceptor {
 
       if (!this.expirandoSessao) {
          this.expirandoSessao = true;
+         this.shared.sessaoExpirada = true;
+         this.fecharJanelasAbertas();
          this.shared.logout();
+         this.dialog.dismiss();
          this.dialog.warning('Sua sessão expirou. Faça login novamente.');
          this.router.navigate(['/login']).then(() => this.expirandoSessao = false);
       }
+   }
+
+   private fecharJanelasAbertas() {
+      this.modalService.dismissAll();
+      document.body.classList.remove('modal-open');
+      Array.prototype.forEach.call(document.querySelectorAll('.modal-backdrop'), (backdrop: HTMLElement) => {
+         if (backdrop.parentNode) {
+            backdrop.parentNode.removeChild(backdrop);
+         }
+      });
    }
 }

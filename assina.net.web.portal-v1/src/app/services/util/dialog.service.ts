@@ -80,6 +80,10 @@ export class DialogService {
       this.toastr.warning(message || '', 'Atenção!', { enableHtml: true });
    }
 
+   warningPersistent(message?: string) {
+      this.toastr.warning(message || '', 'Atenção!', { enableHtml: true, disableTimeOut: true, closeButton: true, tapToDismiss: true });
+   }
+
    dismiss() {
       this.toastr.clear();
    }

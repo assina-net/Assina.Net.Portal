@@ -130,6 +130,7 @@ export class CompleteTabFormComponent {
    private _permiteExibirDocumento: boolean = false;
 
    private _bloqueiaEdicao: boolean = false;
+   private _retornaListaCompleta: boolean = false;
 
    private _index: number;
    private _novoRegistro: string = "Novo Registro";
@@ -252,6 +253,14 @@ export class CompleteTabFormComponent {
       return this._mensagemExclusao;
    }
 
+   @Input('retornaListaCompleta')
+   set retornaListaCompleta(value: boolean) {
+      this._retornaListaCompleta = value;
+   }
+   get retornaListaCompleta() {
+      return this._retornaListaCompleta;
+   }
+
 
    get colspan() {
       return this._colspan;
@@ -268,6 +277,10 @@ export class CompleteTabFormComponent {
          modalRef.componentInstance.dadosComplementares = this._dadosComplementares;
       }
 
+      if (this._retornaListaCompleta) {
+         modalRef.componentInstance.instance = JSON.parse(JSON.stringify(this._dados.listagem));
+      }
+
       modalRef.componentInstance.titulo = this.tituloModal;
       
       modalRef.result.then((result) => {
@@ -279,8 +292,10 @@ export class CompleteTabFormComponent {
 
             this._dados.dirty = true;
 
-            if (result.length > 0) {
-               for (var i = 0, len = result.length; i < len; ++i) {
+            if (this._retornaListaCompleta && Array.isArray(result)) {
+               this._dados.listagem = result;
+            } else if (Array.isArray(result) && result.length > 0) {
+                for (var i = 0, len = result.length; i < len; ++i) {
                   this._dados.listagem.push(result[i]);
                }
             } else {
@@ -317,8 +332,7 @@ export class CompleteTabFormComponent {
             }
 
             this._dados.dirty = true;
-            this._dados.listagem.splice(this._index, 1);
-            this._dados.listagem.push(result);
+            this._dados.listagem.splice(this._index, 1, result);
 
             this.changeEvent.emit();
          }

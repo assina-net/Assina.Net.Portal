@@ -1,1 +1,108 @@
 @import "../../../../../../assets/sass/modal.scss";
+
+.contract-document-help {
+   color: #5f6872;
+   font-size: 0.9rem;
+   margin: 0.2rem 0 0.65rem;
+}
+
+.document-label-row {
+   align-items: center;
+   display: flex;
+   height: 32px;
+}
+
+.document-label-row .nav-link {
+   padding: 0 0 0 0.4rem;
+}
+
+.document-dropzone {
+   align-items: center;
+   border: 1px dashed #a6a9ae;
+   border-radius: 0.25rem;
+   cursor: pointer;
+   display: flex;
+   gap: 0.9rem;
+   min-height: 54px;
+   padding: 0.55rem 0.75rem;
+   transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.document-dropzone-active {
+   background-color: #f1fbf5;
+   border-color: #2ebd65;
+}
+
+.document-dropzone-disabled {
+   background-color: #f8f8f8;
+   cursor: not-allowed;
+}
+
+.document-file-input {
+   display: none;
+}
+
+.document-select-button {
+   flex: 0 0 auto;
+   font-size: 0.9rem;
+   line-height: 1.1;
+   margin: 0;
+   padding: 0.5rem 0.85rem;
+}
+
+.document-dropzone-text {
+   color: #7a828a;
+   font-size: 0.88rem;
+   font-style: italic;
+}
+
+.selected-documents-title {
+   color: #595959;
+   font-size: 0.9rem;
+   font-weight: 600;
+   margin-top: 0.45rem;
+}
+
+.selected-documents-table {
+   border-top: 1px solid #d8d8d8;
+}
+
+.selected-documents-table th {
+   background-color: #e5e5e5;
+   color: #2e3b4b;
+   font-weight: 500;
+   padding: 0.38rem 0.45rem;
+}
+
+.selected-documents-table td {
+   padding: 0.28rem 0.45rem;
+   vertical-align: middle;
+}
+
+.selected-documents-table small {
+   margin: 0;
+}
+
+.action-column {
+   text-align: center;
+   width: 52px;
+}
+
+.document-role-chip {
+   background-color: #eef7f2;
+   border: 1px solid #d5eee0;
+   border-radius: 0.2rem;
+   color: #4f5963;
+   display: inline-flex;
+   font-size: 0.75rem;
+   line-height: 1.1;
+   margin: 0.1rem 0.25rem 0.1rem 0;
+   padding: 0.18rem 0.4rem;
+}
+
+.selected-documents-empty {
+   border-top: 1px solid #d8d8d8;
+   color: #5f6872;
+   font-size: 0.9rem;
+   padding: 0.5rem 0.25rem;
+}

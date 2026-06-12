@@ -90,6 +90,7 @@ export class LoginComponent implements OnInit {
         this.shared.clientes = null;
 
         this.userService.login(this.usuario).subscribe((userAuthentication: CurrentUser) => {
+            this.shared.sessaoExpirada = false;
             this.shared.token = userAuthentication.token;
             this.shared.usuario = userAuthentication.usuario;
             this.shared.clientes = userAuthentication.clientes;

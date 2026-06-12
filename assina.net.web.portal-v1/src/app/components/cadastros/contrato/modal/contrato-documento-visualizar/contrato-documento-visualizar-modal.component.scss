@@ -1,1 +1,26 @@
 @import "../../../../../../assets/sass/modal.scss";
+
+.document-preview-area {
+    align-items: center;
+    display: flex;
+    height: 500px;
+    justify-content: center;
+    position: relative;
+}
+
+.document-preview-area pdf-viewer {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.document-preview-state {
+    color: #555;
+    font-size: 16px;
+}
+
+.document-preview-message {
+    margin: 0;
+    max-width: 640px;
+    width: 90%;
+}
