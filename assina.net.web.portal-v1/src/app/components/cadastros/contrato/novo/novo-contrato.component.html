@@ -52,6 +52,7 @@
                         [showButtons]="!consultando" [novoRegistro]="'Novo Arquivo'"
                         [mensagemExclusao]="'Deseja excluir o documento ? '" [permiteEditar]="false"
                         [viewerDoc]="contratoDocumentoVisualizarForm" [permiteExibirDocumento]="true"
+                        [beforeExibirDocumento]="prepararVisualizacaoDocumento"
                         [retornaListaCompleta]="true" (change)="adicionouContratoDocumento()"
                         [itemTemplate]="detalheArquivo">
                         <ng-template #detalheArquivo let-item>

@@ -42,6 +42,36 @@ export class NovoContratoComponent extends PadraoNovoComponent {
 
     contratoDocumentoVisualizarForm = ContratoDocumentoVisualizarModalComponent;
 
+    prepararVisualizacaoDocumento = (documento, abrirModal) => {
+        if (documento.documento) {
+            abrirModal(documento);
+            return;
+        }
+
+        this.loading.show();
+        this.contratoService.getDocumentoPDF(documento).subscribe((responseApi: ResponseApi) => {
+            this.loading.hide();
+
+            const mensagemApi = this.getMensagemVisualizacao(responseApi);
+            if (mensagemApi || !responseApi || !responseApi.data || !responseApi.data.documentoPDF) {
+                this.dialog.warning(mensagemApi ||
+                    'Não foi possível visualizar este documento agora. Verifique se o arquivo está disponível no armazenamento.');
+                return;
+            }
+
+            documento.documento = responseApi.data.documentoPDF;
+            abrirModal(documento);
+        }, err => {
+            this.loading.hide();
+            const mensagemApi = this.getMensagemVisualizacao(err && err.error);
+            if (mensagemApi) {
+                this.dialog.warning(mensagemApi);
+                return;
+            }
+            this.errorHandler.handle(err);
+        });
+    }
+
 
     constructor(route: ActivatedRoute,
         private contratoService: ContratoService,
@@ -57,6 +87,13 @@ export class NovoContratoComponent extends PadraoNovoComponent {
         //Para carregar os combos
         this.entidade = null;
         this.httpService = this.contratoService;
+    }
+
+    private getMensagemVisualizacao(responseApi: ResponseApi): string {
+        if (responseApi && responseApi.errors && responseApi.errors.length) {
+            return responseApi.errors[responseApi.errors.length - 1];
+        }
+        return null;
     }
 
     get ContratoRequest() {

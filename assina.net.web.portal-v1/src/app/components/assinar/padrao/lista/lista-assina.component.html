@@ -7,148 +7,108 @@
         <div _ngcontent-tbi-c11="" class="col-md-12 clearfix">
             <p _ngcontent-tbi-c11="" style="background: #314355;" class="font-medium white text-center p-1">Selecione
                 uma operação abaixo para acessar suas informações </p>
-        </div>
-        <div class="table-responsive table-border-style table-wrapper-scroll-y  rounded  infinite-scroll" infiniteScroll
-            [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [fromRoot]="true"
-            [infiniteScrollContainer]="'.infinite-scroll'">
-            <div>
-                <table sortable-table (sorted)="onSorted($event)" class="table table-hover table-sm">
-                    <thead class="thead-custom" style=" padding:10px 0px;">
-                        <tr>
-                            <th *ngIf="exibirSelecao">
-                                <span *ngIf="!tudoSelecionado" (click)="selecionaTudo()">
-                                    <i class="fa fa-circle grey font-medium-3"></i>
-                                </span>
-                                <span *ngIf="tudoSelecionado" (click)="limpaSelecao()">
-                                    <i class="fa fa-circle primary font-medium-3"></i>
-                                </span>
-                            </th>
-                            <th><a sortable-column="dataCriacao">Data</a>
-                                <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.dataCriacao"
-                                    name="dataCriacao" class="form-control" id="dataCriacao" placeholder="Pesquisar..."
-                                    (ngModelChange)="filtrando()">
-                            </th>
-                            <th><a sortable-column="identificador">Identificador</a>
-                                <input type="text" ([formControl])="filtro" [(ngModel)]="filtro.identificador"
-                                    name="identificador" class="form-control" id="identificador"
-                                    placeholder="Pesquisar..." (ngModelChange)="filtrando()">
-                            </th>
-                            <th><a sortable-column="assunto">Assunto</a>
-                                <input type="text" [(ngModel)]="filtro.assunto" name="assunto" class="form-control"
-                                    id="assunto" placeholder="Pesquisar..." (ngModelChange)="filtrando()">
-                            </th>
-                            <th *ngIf="clienteSegmento()=='FACTORING' || clienteSegmento()=='FIDC' || clienteSegmento()=='SECURITIZADORA'">
-                                <a sortable-column="valorContratro">Valor</a>
-                                <input type="text" [(ngModel)]="filtro.valorContratro" name="valorContratro"
-                                    class="form-control" id="valorContratro" placeholder="Pesquisar..."
-                                    (ngModelChange)="filtrando()">
-                            </th>
-                            <th><a sortable-column="statusContrato">Status</a>
-                                <select class="form-control" [(ngModel)]="filtro.statusContrato" id="statusContrato"
-                                    name="statusContrato" (ngModelChange)="filtrando()">
-                                    <option [ngValue]="null">Selecione</option>
-                                    <option *ngFor="let opcao of opcoesStatusContrato" [value]="opcao.value">
-                                        {{opcao.label}}
-                                    </option>
-                                </select>
-                            </th>
+            <div class="pendencias-documentos-area">
+                <div class="pendencias-cabecalho">
+                    <div *ngIf="exibirSelecao" class="pendencias-selecao">
+                        <i *ngIf="!tudoSelecionado" class="fa fa-circle grey font-medium-3" (click)="selecionaTudo()"></i>
+                        <i *ngIf="tudoSelecionado" class="fa fa-circle primary font-medium-3" (click)="limpaSelecao()"></i>
+                    </div>
+                    <div class="pendencias-data">
+                        <span>Data</span>
+                        <input type="text" [(ngModel)]="filtro.dataCriacao" name="dataCriacao" class="form-control"
+                            placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                    </div>
+                    <div class="pendencias-identificador">
+                        <span>Identificador</span>
+                        <input type="text" [(ngModel)]="filtro.identificador" name="identificador" class="form-control"
+                            placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                    </div>
+                    <div class="pendencias-assunto">
+                        <span>Assunto</span>
+                        <input type="text" [(ngModel)]="filtro.assunto" name="assunto" class="form-control"
+                            placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                    </div>
+                    <div class="pendencias-valor"
+                        *ngIf="clienteSegmento()=='FACTORING' || clienteSegmento()=='FIDC' || clienteSegmento()=='SECURITIZADORA'">
+                        <span>Valor</span>
+                        <input type="text" [(ngModel)]="filtro.valorContratro" name="valorContratro" class="form-control"
+                            placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                    </div>
+                    <div class="pendencias-status">
+                        <span>Status</span>
+                        <select class="form-control" [(ngModel)]="filtro.statusContrato" name="statusContrato"
+                            (ngModelChange)="filtrando()">
+                            <option [ngValue]="null">Selecione</option>
+                            <option *ngFor="let opcao of opcoesStatusContrato" [value]="opcao.value">{{opcao.label}}</option>
+                        </select>
+                    </div>
+                    <div class="pendencias-partes">
+                        <span>Partes</span>
+                        <input type="text" [(ngModel)]="filtro.partes[0].nomeRazaoSocial" name="partes"
+                            class="form-control" placeholder="Pesquisar..." (ngModelChange)="filtrando()">
+                    </div>
+                </div>
 
-                            <th style="vertical-align:top"><a>Partes</a>
-
-                                <input type="text" [(ngModel)]="filtro.partes[0].nomeRazaoSocial" name="partes"
-                                    class="form-control" id="partes" placeholder="Pesquisar..."
-                                    (ngModelChange)="filtrando()">
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody [ngStyle]="classUpperCase()">
-                        <tr *ngFor="let contrato of listagem" (click)="selecionarLinha(contrato)"
-                            [ngClass]="legendaGrid(contrato)" (dblclick)="editar(false)">
-                            <td *ngIf="exibirSelecao" style="text-align: center;">
-                                <span *ngIf="selection.indexOf(contrato.id) > -1" class=" btn-gray"
-                                    (click)="alteranaSelecao(contrato)">
-                                    <i class="fa fa-circle font-medium-3 primary"></i>
-                                </span>
-
-                                <span *ngIf="selection.indexOf(contrato.id) == -1" class=" btn-gray"
-                                    (click)="alteranaSelecao(contrato)">
-                                    <i class="fa fa-circle font-medium-3 grey"></i>
-                                </span>
-                            </td>
-
-                            <td class="text-center">{{contrato.dataCriacao | date: 'dd/MM/yyyy HH:mm'}}</td>
-                            <td [ngStyle]="classUpperCase()">{{contrato.identificador}}</td>
-                            <td [ngStyle]="classUpperCase()">{{contrato.assunto}}</td>
-                            <td [ngStyle]="classUpperCase()"
-                                *ngIf="shared.clienteSelecionado.cliente.segmento.identificacao=='FACTORING' || shared.clienteSelecionado.cliente.segmento.identificacao=='FIDC' || shared.clienteSelecionado.cliente.segmento.identificacao=='SECURITIZADORA'"
-                                class="text-right">{{contrato.valorContratro|
-                        currency:'R$':true}}
-                            </td>
-                            <td [ngStyle]="classUpperCase()">{{contrato.descStatusContrato}}</td>
-                            <td [ngStyle]="classUpperCase()">
-                                <table>
-                                    <tr *ngFor="let parte of contrato.partes">
-                                        <td>
-                                            <span style="display: inline-flex;font-size: xx-small;">
-
-                                                <span *ngIf=" parte.tipoPessoa=='FISICA' &&
-                                                     parte.statusAssinatura=='NAOASSINADO' && !observador(parte)"
-                                                    class="gradient-ibiza-sunset d-block rounded-circle"
-                                                    style="margin-top:4px;width:10px; height:10px;"
-                                                    ngbTooltip="Não assinado" data-bg-color="ibiza-sunset"></span>
-                                                <span *ngIf=" parte.tipoPessoa=='FISICA' &&
-                                                    parte.statusAssinatura=='NAOLIBERADO' && !observador(parte) "
-                                                    class="bg-grey d-block rounded-circle"
-                                                    style="margin-top:4px;width:10px; height:10px;"
-                                                    ngbTooltip="Assinatura não liberada" data-bg-color="grey"></span>
-                                                <span
-                                                    *ngIf="parte.tipoPessoa=='FISICA' && parte.statusAssinatura=='ASSINADO' && !observador(parte)"
-                                                    class="bg-success d-block rounded-circle"
-                                                    style="margin-top:4px;width:10px; height:10px;"
-                                                    ngbTooltip="Assinado" data-bg-color="success"></span>
-                                                <span  *ngIf="parte.tipoPessoa=='FISICA' && observador(parte)">
-                                                    <i class="fa fa-eye font-medium-0"></i>
-                                                </span>    
-
-
-                                                <span style="margin-left:5px">{{parte.nomeRazaoSocial}}</span>
-
+                <div class="pendencias-corpo" [ngStyle]="classUpperCase()">
+                    <div *ngFor="let contrato of listagem" class="pendencias-documento"
+                        [ngClass]="legendaGrid(contrato)" (click)="selecionarLinha(contrato)" (dblclick)="detalhar(false)">
+                        <div *ngIf="exibirSelecao" class="pendencias-selecao"
+                            (click)="alteranaSelecao(contrato); $event.stopPropagation()">
+                            <i class="fa fa-circle font-medium-3"
+                                [ngClass]="selection.indexOf(contrato.id) > -1 ? 'primary' : 'grey'"></i>
+                        </div>
+                        <div class="pendencias-data text-center">{{contrato.dataCriacao | date: 'dd/MM/yyyy HH:mm'}}</div>
+                        <div class="pendencias-identificador">{{contrato.identificador}}</div>
+                        <div class="pendencias-assunto">{{contrato.assunto}}</div>
+                        <div class="pendencias-valor text-right"
+                            *ngIf="clienteSegmento()=='FACTORING' || clienteSegmento()=='FIDC' || clienteSegmento()=='SECURITIZADORA'">
+                            {{contrato.valorContratro | currency:'R$':true}}
+                        </div>
+                        <div class="pendencias-status">{{contrato.descStatusContrato}}</div>
+                        <div class="pendencias-partes pendencias-lista-partes">
+                            <ng-container *ngFor="let parte of (contrato.partes || [])">
+                                <span class="pendencias-parte">
+                                    <i *ngIf="parte.tipoPessoa=='FISICA' && observador(parte)" class="fa fa-eye"></i>
+                                    <span *ngIf="parte.tipoPessoa=='FISICA' && !observador(parte)"
+                                        class="pendencias-indicador"
+                                        [attr.title]="descricaoStatusAssinatura(parte.statusAssinatura)"
+                                        [ngClass]="{'nao-assinado': parte.statusAssinatura=='NAOASSINADO',
+                                                    'nao-liberado': parte.statusAssinatura=='NAOLIBERADO',
+                                                    'assinado': parte.statusAssinatura=='ASSINADO',
+                                                    'assinado-parcial': parte.statusAssinatura=='ASSINADOPARCIAL'}"></span>
+                                    <span class="pendencias-pessoa">
+                                        <span class="pendencias-nome">{{parte.nomeRazaoSocial}}</span>
+                                        <span class="pendencias-papeis" *ngIf="parte.papel && parte.papel.length">
+                                            <span *ngFor="let vinculoPapel of parte.papel" class="pendencias-papel">
+                                                {{vinculoPapel.papel?.nome || vinculoPapel.papel?.identificacao}}
                                             </span>
-                                            <span *ngFor="let contato of parte.contatos">
-                                                <span style="display: inline-flex;font-size: xx-small;">
-                                                    <span *ngIf="contato.tipoPessoa=='FISICA' &&
-                                                        contato.statusAssinatura=='NAOASSINADO' && !observador(contato) "
-                                                        class="gradient-ibiza-sunset d-block rounded-circle"
-                                                        style="margin-top:4px;width:10px; height:10px;"
-                                                        ngbTooltip="Não assinado" data-bg-color="ibiza-sunset"></span>
-                                                    <span *ngIf=" contato.tipoPessoa=='FISICA' &&
-                                                        contato.statusAssinatura=='NAOLIBERADO'  && !observador(contato) "
-                                                        class="bg-grey d-block rounded-circle"
-                                                        style="margin-top:4px;width:10px; height:10px;"
-                                                        ngbTooltip="Assinatura não liberada"
-                                                        data-bg-color="grey"></span>
-                                                    <span *ngIf="contato.tipoPessoa=='FISICA' &&
-                                                        contato.statusAssinatura=='ASSINADO'  && !observador(contato) "
-                                                        class="bg-success d-block rounded-circle"
-                                                        style="margin-top:4px;width:10px; height:10px;"
-                                                        ngbTooltip="Assinado" data-bg-color="success"></span>
-                                                    <span  *ngIf="contato.tipoPessoa=='FISICA' && observador(parte)">
-                                                            <i class="fa fa-eye font-medium-0"></i>
-                                                    </span>    
-                                                    <span style="margin-left:5px">{{contato.nomeRazaoSocial}}</span>
-                                                </span>
+                                        </span>
+                                    </span>
+                                </span>
+                                <span *ngFor="let contato of (parte.contatos || [])"
+                                    class="pendencias-parte pendencias-representante">
+                                    <i *ngIf="contato.tipoPessoa=='FISICA' && observador(contato)" class="fa fa-eye"></i>
+                                    <span *ngIf="contato.tipoPessoa=='FISICA' && !observador(contato)"
+                                        class="pendencias-indicador"
+                                        [attr.title]="descricaoStatusAssinatura(contato.statusAssinatura)"
+                                        [ngClass]="{'nao-assinado': contato.statusAssinatura=='NAOASSINADO',
+                                                    'nao-liberado': contato.statusAssinatura=='NAOLIBERADO',
+                                                    'assinado': contato.statusAssinatura=='ASSINADO',
+                                                    'assinado-parcial': contato.statusAssinatura=='ASSINADOPARCIAL'}"></span>
+                                    <span class="pendencias-pessoa">
+                                        <span class="pendencias-nome">{{contato.nomeRazaoSocial}}</span>
+                                        <span class="pendencias-papeis" *ngIf="contato.papel && contato.papel.length">
+                                            <span *ngFor="let vinculoPapel of contato.papel" class="pendencias-papel">
+                                                {{vinculoPapel.papel?.nome || vinculoPapel.papel?.identificacao}}
                                             </span>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr *ngIf="!listagem.length">
-                            <td colspan="5">Nenhum registro encontrado</td>
-                        </tr>
-                    </tbody>
-                </table>
+                                        </span>
+                                    </span>
+                                </span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div *ngIf="!listagem.length" class="pendencias-vazia">Nenhum registro encontrado</div>
+                </div>
             </div>
         </div>
         <div class="row m-2 crud-actions">

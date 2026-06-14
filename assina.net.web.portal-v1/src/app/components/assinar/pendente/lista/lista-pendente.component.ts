@@ -37,7 +37,7 @@ export class ListaPendenteComponent extends ListaAssinaPadraoComponent {
         this.page = {
             number: 0,
             size: 30,
-            order: 'dataCriacao,DESC'
+            order: 'dataSolicitacaoAssinatura,DESC'
         };
         this.httpService = this.documentoService;
         this.opcoesStatusContrato = this.utilService.enumToKeyValue(StatusContratoEnum);

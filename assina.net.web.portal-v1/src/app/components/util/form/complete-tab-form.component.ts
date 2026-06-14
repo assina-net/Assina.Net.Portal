@@ -108,6 +108,7 @@ export class CompleteTabFormComponent {
    @Input() tituloModal: string ;
    @Input() content: any;
    @Input() viewerDoc: any;
+   @Input() beforeExibirDocumento: (item: any, abrirModal: (documento: any) => void) => void;
    @Input() required: boolean = false;
    @Input() itemTemplate: TemplateRef<any>;
    @Input() large: boolean = true;
@@ -359,12 +360,25 @@ export class CompleteTabFormComponent {
 
    exibirDocumento(item, i) {
       this._index = i;
+
+      if (this.beforeExibirDocumento) {
+         this.beforeExibirDocumento(
+            JSON.parse(JSON.stringify(item)),
+            documento => this.abrirModalDocumento(documento)
+         );
+         return;
+      }
+
+      this.abrirModalDocumento(JSON.parse(JSON.stringify(item)));
+   }
+
+   private abrirModalDocumento(item) {
       const modalRef = this.modalService.open(
          this.viewerDoc, {
          backdrop: 'static', centered: true, keyboard: false, size: this.sizeExibir
       }
       );
-      modalRef.componentInstance.instance = JSON.parse(JSON.stringify(item));
+      modalRef.componentInstance.instance = item;
       modalRef.result.then((result) => {
          if (result && result != 'close') {
             //console.log(result);

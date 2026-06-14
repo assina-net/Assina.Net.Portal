@@ -30,6 +30,8 @@ export class ListaAssinaPadraoComponent extends PadraoListaComponent {
   podeCancelar: boolean;
   excluirPerfilAssinador: boolean;
   contratoList: any = [];
+  totalRegistros = 0;
+  private ultimaConsulta = 0;
 
   assinarModalForm = AssinarModalComponent;
   cancelarModalForm = CancelarModalComponent;
@@ -52,8 +54,10 @@ export class ListaAssinaPadraoComponent extends PadraoListaComponent {
 
 
   findAll(pageable: Page, filtro: any) {
+    const consultaAtual = ++this.ultimaConsulta;
     this.loading.show();
     this.objetoSelecionado = null;
+    const paginaSolicitada = pageable.number;
 
     let contratoFiltroRequest = {
       usuario: this.shared.usuario,
@@ -61,22 +65,40 @@ export class ListaAssinaPadraoComponent extends PadraoListaComponent {
     }
 
     this.httpService.findAll(pageable, contratoFiltroRequest).subscribe((responseApi: ResponseApi) => {
+      if (consultaAtual !== this.ultimaConsulta) {
+        return;
+      }
 
-      if (this.listagem.length == 0) {
-        this.listagem = responseApi['data']['content'];
+      const pagina = responseApi && responseApi.data;
+      if (!pagina || !Array.isArray(pagina.content)) {
+        this.listagem = [];
+        this.loading.hide();
+        this.dialog.warning("Não foi possível carregar a lista de documentos.");
+        return;
+      }
+
+      if (paginaSolicitada === 0) {
+        this.listagem = pagina.content.slice();
       }
       else {
-        this.listagem = this.listagem.concat(responseApi['data']['content']);
+        this.listagem = this.listagem.concat(pagina.content);
       }
+      this.totalRegistros = pagina.totalElements != null
+        ? pagina.totalElements
+        : this.listagem.length;
 
 
-      this.pages = new Array(responseApi['data']['totalPages']);
+      this.pages = new Array(pagina.totalPages);
       let order = this.page.order;
-      this.page = responseApi['data'];
+      this.page = pagina;
       this.page.order = order;
       this.afterRetrieveData();
       this.loading.hide();
     }, err => {
+      if (consultaAtual !== this.ultimaConsulta) {
+        return;
+      }
+      this.loading.hide();
       this.errorHandler.handle(err);
     });
   }
@@ -87,6 +109,7 @@ export class ListaAssinaPadraoComponent extends PadraoListaComponent {
 
   clienteChange() {
     this.listagem = [];
+    this.totalRegistros = 0;
     this.selection = [];
     this.tudoSelecionado = false;    
     this.filtro.custodiante = { id: this.shared.clienteSelecionado.cliente.id };
@@ -99,7 +122,11 @@ export class ListaAssinaPadraoComponent extends PadraoListaComponent {
   }
 
   clienteSegmento(){
-    return this.shared.clienteSelecionado.cliente.segmento.identificacao
+    return this.shared.clienteSelecionado
+      && this.shared.clienteSelecionado.cliente
+      && this.shared.clienteSelecionado.cliente.segmento
+      ? this.shared.clienteSelecionado.cliente.segmento.identificacao
+      : "";
   }
 
   verificaSePodeSelecionar(contrato) {
@@ -316,13 +343,25 @@ export class ListaAssinaPadraoComponent extends PadraoListaComponent {
 
 
   observador(parte) {
+    if (!parte || !Array.isArray(parte.papel)) {
+      return false;
+    }
     for (var iPapel in parte.papel) {
       let papel = parte.papel[iPapel];
-      if (papel.papel.identificacao == "OBSERVADOR") {
+      if (papel && papel.papel && papel.papel.identificacao == "OBSERVADOR") {
         return true;
-      } else {
-        return false;
       }
+    }
+    return false;
+  }
+
+  descricaoStatusAssinatura(status) {
+    switch (status) {
+      case "NAOASSINADO": return "Ainda não assinou";
+      case "ASSINADO": return "Documento assinado";
+      case "ASSINADOPARCIAL": return "Assinatura parcial";
+      case "NAOLIBERADO": return "Assinatura ainda não liberada";
+      default: return "Status de assinatura não informado";
     }
   }
 

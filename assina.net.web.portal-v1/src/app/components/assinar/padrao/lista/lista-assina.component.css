@@ -1,3 +1,156 @@
+.pendencias-documentos-area {
+    border: 1px solid #b9b9b9;
+    display: block;
+    height: calc(100vh - 390px);
+    min-height: 280px;
+    overflow: auto;
+    width: 100%;
+}
 
-thead-custom {border:1px solid #b9b9b9;}
-/*th {border:none; text-align: center; font-weight: normal; font-size: 1.2rem !important; color: #75787d;}*/
+.pendencias-cabecalho,
+.pendencias-documento {
+    align-items: center;
+    display: table;
+    min-width: 1000px;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.pendencias-cabecalho {
+    background: #f7f7f7;
+    border-bottom: 1px solid #b9b9b9;
+}
+
+.pendencias-cabecalho > div,
+.pendencias-documento > div {
+    display: table-cell;
+    padding: 0.55rem 0.45rem;
+    vertical-align: middle;
+}
+
+.pendencias-cabecalho > div {
+    text-align: center;
+    vertical-align: top;
+}
+
+.pendencias-cabecalho span {
+    color: #595959;
+    display: block;
+    font-size: 1.05rem;
+    margin-bottom: 0.35rem;
+}
+
+.pendencias-documento {
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
+    min-height: 62px;
+}
+
+.pendencias-documento:nth-child(even) {
+    background: #f1fbf5;
+}
+
+.pendencias-documento:hover {
+    background: #e7f7ee;
+}
+
+.pendencias-selecao {
+    cursor: pointer;
+    text-align: center;
+    width: 42px;
+}
+
+.pendencias-data {
+    width: 145px;
+}
+
+.pendencias-identificador,
+.pendencias-assunto {
+    width: 180px;
+}
+
+.pendencias-valor {
+    width: 120px;
+}
+
+.pendencias-status {
+    width: 180px;
+}
+
+.pendencias-lista-partes,
+.pendencias-parte {
+    display: flex;
+}
+
+.pendencias-lista-partes {
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 0.75rem;
+    gap: 0.35rem;
+}
+
+.pendencias-parte {
+    align-items: flex-start;
+    gap: 0.35rem;
+    line-height: 1.2;
+}
+
+.pendencias-representante {
+    margin-left: 0.75rem;
+}
+
+.pendencias-pessoa {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.pendencias-nome {
+    color: #3f454b;
+}
+
+.pendencias-papeis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+}
+
+.pendencias-papel {
+    background: #e8edf2;
+    border: 1px solid #c8d0d8;
+    border-radius: 0.65rem;
+    color: #55616d;
+    font-size: 0.62rem;
+    line-height: 1;
+    padding: 0.18rem 0.38rem;
+}
+
+.pendencias-indicador {
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 10px;
+    height: 10px;
+    margin-top: 0.12rem;
+    width: 10px;
+}
+
+.pendencias-indicador.nao-assinado {
+    background: #ff416c;
+}
+
+.pendencias-indicador.nao-liberado {
+    background: #a6a6a6;
+}
+
+.pendencias-indicador.assinado {
+    background: #34b563;
+}
+
+.pendencias-indicador.assinado-parcial {
+    background: #f7a51a;
+}
+
+.pendencias-vazia {
+    padding: 1rem;
+    text-align: center;
+}

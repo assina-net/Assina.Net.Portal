@@ -12,7 +12,7 @@ import { PerfilEnum } from 'app/model/enum/perfilEnum';
    <div style="padding:15px 0px;" >
       <ul *ngIf="this.clientePorPerfil.length > 0" class="row list-unstyled" >
          <li class="col-md-12" ngbDropdown [placement] = "placement" >
-               <label for="inputClienteSelecionado" class= "text-capitalize font-medium-2 font-weight-normal" style = "letter-spacing: normal;">Clientes</label>
+               <label for="inputClienteSelecionado" class= "text-capitalize font-medium-2 font-weight-normal" style = "letter-spacing: normal;">Selecione um cliente</label>
          </li>
          <li class="col-md-12" ngbDropdown [placement] = "placement" >
                <select id="inputClienteSelecionado" [(ngModel)]="_clienteSelecionado"

@@ -204,6 +204,8 @@ export class PadraoListaComponent implements OnInit {
     }
 
     onSorted($event) {
+        this.listagem = [];
+        this.page.number = 0;
         this.page.order = $event.sortColumn + ',' + $event.sortDirection;
         this.filtrar();
     }
@@ -243,6 +245,9 @@ export class PadraoListaComponent implements OnInit {
     }
 
     onScroll() {
+        if (this.page.totalPages != null && this.page.number + 1 >= this.page.totalPages) {
+            return;
+        }
         this.page.number++;
         this.filtrar();
     }
