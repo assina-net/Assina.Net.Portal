@@ -1,0 +1,749 @@
+// Assina.Net v2 — Schema PostgreSQL (Prisma)
+// Plataforma de assinatura digital. Modelo derivado do domínio JPA da v1,
+// normalizado para Postgres. Mudanças-chave vs v1:
+//  - PKs uuid (gen_random_uuid) em vez de uniqueidentifier do SQL Server
+//  - Documentos NÃO ficam no banco: vão para o S3 (storageKey + hash). Só metadados aqui.
+//  - Enums nativos do Postgres (compatíveis com as strings da v1)
+//  - Auditoria createdAt/updatedAt em todas as tabelas
+//  - Typos do legado corrigidos (valorContrato, idiomas, ORIGINAL)
+//  - Multi-tenant por clienteId em todas as entidades de negócio
+//
+// Comandos: `prisma migrate dev` (não usar ddl-auto=update do legado).
+
+generator client {
+  provider      = "prisma-client-js"
+  // native = local; rhel-openssl-3.0.x = runtime do AWS Lambda (Amazon Linux 2023)
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── ENUMS ─────────────────────────────
+
+enum Status {
+  ATIVO
+  INATIVO
+}
+
+enum StatusContrato {
+  NAO_LIBERADO_ASSINATURA
+  LIBERANDO_ASSINATURA
+  LIBERADO_ASSINATURA
+  GERANDO_ASSINATURAS
+  PARCIALMENTE_ASSINADO
+  ASSINADO
+  CANCELADO
+  RECUSADO
+}
+
+enum StatusAssinatura {
+  NAO_LIBERADO
+  NAO_ASSINADO
+  ASSINADO_PARCIAL
+  ASSINADO
+}
+
+enum StatusDocumento {
+  NAO_ASSINA
+  NAO_ASSINADO
+  PARCIALMENTE_ASSINADO
+  ASSINADO
+}
+
+// Métodos de assinatura suportados na v2 (gov.br e client local são 1ª classe)
+enum TipoAssinatura {
+  TOKEN_ELETRONICO // código por email/SMS/WhatsApp — validado NO SERVIDOR
+  GOVBR // assinatura gov.br (API oficial, PAdES)
+  CERTIFICADO_LOCAL // client instalado na máquina (A1/A3 local)
+  CERTIFICADO_NUVEM // certificado em nuvem ICP-Brasil (BirdID/VIDaaS/SafeID)
+}
+
+enum TipoPessoa {
+  FISICA
+  JURIDICA
+}
+
+enum Perfil {
+  ROLE_ADMIN
+  ROLE_SUPORTE
+  ROLE_DIRETORIA
+  ROLE_FINANCEIRO
+  ROLE_ADMIN_CLIENTE
+  ROLE_USUARIO
+  ROLE_ASSINADOR
+  ROLE_INTEGRACAO
+}
+
+enum TipoEnvioMsg {
+  EMAIL
+  WHATSAPP
+  SMS
+}
+
+enum TipoValorAtributo {
+  INTEGER
+  BOOLEAN
+  TEXT_SIMPLE
+  TEXT_HTML
+  DIAS_SEMANA
+  HORARIOS
+  PDF
+}
+
+enum TipoArquivo {
+  ORIGINAL
+  ASSINADO
+}
+
+enum OrdemAssinatura {
+  PARALELA
+  SEQUENCIAL
+}
+
+// ───────────────────────── IDENTIDADE / ACESSO ─────────────────────────
+
+model Cliente {
+  id                 String    @id @default(uuid()) @db.Uuid
+  pessoaId           String    @unique @db.Uuid
+  pessoa             Pessoa    @relation(fields: [pessoaId], references: [id])
+  segmentoId         String?   @db.Uuid
+  segmento           Segmento? @relation(fields: [segmentoId], references: [id])
+  planoId            String?   @db.Uuid
+  plano              Plano?    @relation(fields: [planoId], references: [id])
+  status             Status    @default(ATIVO)
+  indicacao          String?
+  dataInicioContrato DateTime?
+  dataFimContrato    DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  usuarios         UsuarioCliente[]
+  contratos        Contrato[]
+  papeis           Papel[]
+  tiposDocumento   TipoDocumento[]
+  sistemaAtributos SistemaAtributo[]
+  tiposEndereco    TipoEndereco[]
+  tiposTelefone    TipoTelefone[]
+  configuracao     ConfiguracaoCliente?
+  apiKeys          ApiKey[]
+  webhooks         Webhook[]
+
+  @@index([status])
+}
+
+model Usuario {
+  id                    String    @id @default(uuid()) @db.Uuid
+  pessoaId              String    @db.Uuid
+  pessoa                Pessoa    @relation(fields: [pessoaId], references: [id])
+  login                 String    @unique
+  senhaHash             String // BCrypt; nunca exposto (select controlado na app)
+  perfil                Perfil    @default(ROLE_USUARIO)
+  status                Status    @default(ATIVO)
+  // verificação de e-mail
+  emailVerificadoEm     DateTime?
+  tokenVerificacao      String?
+  // recuperação de senha
+  chaveEsqueceuSenha    String?
+  validadeEsqueceuSenha DateTime?
+  // controle de tentativas de acesso
+  tentativasAcesso      Int       @default(0)
+  primeiraTentativa     DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  clientes              UsuarioCliente[]
+  termosAceitos         UsuarioTermo[]
+  assinaturas           ContratoParteDocumento[]
+  contratosRemetente    Contrato[]               @relation("ContratoRemetente")
+  contratosSolicitacao  Contrato[]               @relation("ContratoSolicitacao")
+  contratosCancelamento Contrato[]               @relation("ContratoCancelamento")
+  contratosRecusa       Contrato[]               @relation("ContratoRecusa")
+
+  @@index([status])
+  @@index([tokenVerificacao])
+  @@index([chaveEsqueceuSenha])
+}
+
+// N:N usuário↔cliente com perfil contextual por cliente
+model UsuarioCliente {
+  id        String   @id @default(uuid()) @db.Uuid
+  usuarioId String   @db.Uuid
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  clienteId String   @db.Uuid
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+  perfil    Perfil   @default(ROLE_USUARIO)
+  status    Status   @default(ATIVO)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([usuarioId, clienteId])
+}
+
+// Tokens de assinatura/OTP isolados do usuário (consumíveis, com tentativas).
+// Corrige C1 da v1: validação acontece no servidor contra este registro.
+model TokenAssinatura {
+  id              String        @id @default(uuid()) @db.Uuid
+  contratoParteId String        @db.Uuid
+  contratoParte   ContratoParte @relation(fields: [contratoParteId], references: [id], onDelete: Cascade)
+  codigoHash      String // hash do código (nunca em claro, nunca retornado)
+  canal           TipoEnvioMsg
+  validade        DateTime
+  tentativas      Int           @default(0)
+  maxTentativas   Int           @default(3)
+  consumidoEm     DateTime?
+  createdAt       DateTime      @default(now())
+
+  @@index([contratoParteId, consumidoEm])
+}
+
+model UsuarioTermo {
+  id                String          @id @default(uuid()) @db.Uuid
+  usuarioId         String          @db.Uuid
+  usuario           Usuario         @relation(fields: [usuarioId], references: [id])
+  sistemaAtributoId String          @db.Uuid
+  sistemaAtributo   SistemaAtributo @relation(fields: [sistemaAtributoId], references: [id])
+  dataAceite        DateTime        @default(now())
+  ip                String?
+
+  @@index([usuarioId])
+}
+
+// ───────────────────────────── PESSOA ─────────────────────────────
+
+model Pessoa {
+  id              String     @id @default(uuid()) @db.Uuid
+  tipoPessoa      TipoPessoa
+  cpfCnpj         String
+  nomeRazaoSocial String
+  email           String?
+  clienteId       String?    @db.Uuid
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  cliente   Cliente?
+  usuarios  Usuario[]
+  enderecos PessoaEndereco[]
+  telefones PessoaTelefone[]
+  // vínculos PJ↔PF e papéis de PF
+  comoPJ    PessoaJuridicaPessoaFisica[] @relation("PessoaJuridica")
+  comoPF    PessoaJuridicaPessoaFisica[] @relation("PessoaFisica")
+  papeisPF  PessoaFisicaPapel[]
+
+  @@index([cpfCnpj])
+  @@index([clienteId])
+}
+
+model PessoaEndereco {
+  id             String        @id @default(uuid()) @db.Uuid
+  pessoaId       String        @db.Uuid
+  pessoa         Pessoa        @relation(fields: [pessoaId], references: [id])
+  tipoEnderecoId String?       @db.Uuid
+  tipoEndereco   TipoEndereco? @relation(fields: [tipoEnderecoId], references: [id])
+  paisId         String?       @db.Uuid
+  pais           Pais?         @relation(fields: [paisId], references: [id])
+  endereco       String?
+  numero         String?
+  complemento    String?
+  bairro         String?
+  municipio      String?
+  estado         String?
+  cep            String?
+  status         Status        @default(ATIVO)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model PessoaTelefone {
+  id             String        @id @default(uuid()) @db.Uuid
+  pessoaId       String        @db.Uuid
+  pessoa         Pessoa        @relation(fields: [pessoaId], references: [id])
+  tipoTelefoneId String?       @db.Uuid
+  tipoTelefone   TipoTelefone? @relation(fields: [tipoTelefoneId], references: [id])
+  paisId         String?       @db.Uuid
+  pais           Pais?         @relation(fields: [paisId], references: [id])
+  numero         String
+  complemento    String?
+  status         Status        @default(ATIVO)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model PessoaJuridicaPessoaFisica {
+  id               String              @id @default(uuid()) @db.Uuid
+  pessoaJuridicaId String              @db.Uuid
+  pessoaJuridica   Pessoa              @relation("PessoaJuridica", fields: [pessoaJuridicaId], references: [id])
+  pessoaFisicaId   String              @db.Uuid
+  pessoaFisica     Pessoa              @relation("PessoaFisica", fields: [pessoaFisicaId], references: [id])
+  papeis           PessoaFisicaPapel[]
+
+  @@unique([pessoaJuridicaId, pessoaFisicaId])
+}
+
+model PessoaFisicaPapel {
+  id             String                     @id @default(uuid()) @db.Uuid
+  pessoaFisicaId String                     @db.Uuid
+  pessoaFisica   Pessoa                     @relation(fields: [pessoaFisicaId], references: [id])
+  pjPfId         String                     @db.Uuid
+  pjPf           PessoaJuridicaPessoaFisica @relation(fields: [pjPfId], references: [id])
+  papelId        String                     @db.Uuid
+  papel          Papel                      @relation(fields: [papelId], references: [id])
+
+  @@unique([pjPfId, pessoaFisicaId, papelId])
+}
+
+// ──────────────────────── CATÁLOGO / CONFIG ────────────────────────
+
+model Papel {
+  id            String   @id @default(uuid()) @db.Uuid
+  clienteId     String   @db.Uuid
+  cliente       Cliente  @relation(fields: [clienteId], references: [id])
+  identificacao String
+  nome          String
+  assina        Boolean  @default(true)
+  status        Status   @default(ATIVO)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  papelTipoClientes   PapelTipoCliente[]
+  contratoPartePapeis ContratoPartePapel[]
+  contratoDocPapeis   ContratoDocumentoPapel[]
+  tipoDocumentoPapeis TipoDocumentoPapel[]
+  tipoDocPartePapeis  TipoDocumentoPartePapel[]
+  pessoaFisicaPapeis  PessoaFisicaPapel[]
+  tipoDocPosicoes     TipoDocumentoPosicao[]
+
+  @@index([clienteId])
+}
+
+model PapelTipoCliente {
+  id         String    @id @default(uuid()) @db.Uuid
+  papelId    String    @db.Uuid
+  papel      Papel     @relation(fields: [papelId], references: [id])
+  segmentoId String?   @db.Uuid
+  segmento   Segmento? @relation(fields: [segmentoId], references: [id])
+}
+
+model TipoDocumento {
+  id              String   @id @default(uuid()) @db.Uuid
+  clienteId       String   @db.Uuid
+  cliente         Cliente  @relation(fields: [clienteId], references: [id])
+  nome            String
+  identificacao   String?
+  assina          Boolean  @default(true)
+  qrcode          Boolean  @default(false)
+  validacaoOnLine Boolean  @default(false)
+  ordem           Int?
+  status          Status   @default(ATIVO)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  papeis             TipoDocumentoPapel[]
+  partes             TipoDocumentoParte[]
+  posicoesAssinatura TipoDocumentoPosicao[]
+  tipoClientes       TipoDocumentoTipoCliente[]
+  contratoDocumentos ContratoDocumento[]
+
+  @@index([clienteId])
+}
+
+model TipoDocumentoPapel {
+  id              String        @id @default(uuid()) @db.Uuid
+  tipoDocumentoId String        @db.Uuid
+  tipoDocumento   TipoDocumento @relation(fields: [tipoDocumentoId], references: [id])
+  papelId         String        @db.Uuid
+  papel           Papel         @relation(fields: [papelId], references: [id])
+  token           Boolean       @default(false) // permite assinatura por token
+  certificate     Boolean       @default(false) // permite assinatura por certificado
+}
+
+model TipoDocumentoParte {
+  id              String                    @id @default(uuid()) @db.Uuid
+  tipoDocumentoId String                    @db.Uuid
+  tipoDocumento   TipoDocumento             @relation(fields: [tipoDocumentoId], references: [id])
+  clienteId       String?                   @db.Uuid
+  pessoaId        String?                   @db.Uuid
+  pessoaPjId      String?                   @db.Uuid
+  papeis          TipoDocumentoPartePapel[]
+}
+
+model TipoDocumentoPartePapel {
+  id                   String             @id @default(uuid()) @db.Uuid
+  tipoDocumentoParteId String             @db.Uuid
+  tipoDocumentoParte   TipoDocumentoParte @relation(fields: [tipoDocumentoParteId], references: [id])
+  papelId              String             @db.Uuid
+  papel                Papel              @relation(fields: [papelId], references: [id])
+}
+
+// Coordenadas da assinatura visível no PDF
+model TipoDocumentoPosicao {
+  id              String        @id @default(uuid()) @db.Uuid
+  tipoDocumentoId String        @db.Uuid
+  tipoDocumento   TipoDocumento @relation(fields: [tipoDocumentoId], references: [id])
+  papelId         String        @db.Uuid // refere TipoDocumentoPapel/Papel
+  papel           Papel         @relation(fields: [papelId], references: [id])
+  pagina          Int
+  x               Float
+  y               Float
+  width           Float
+  height          Float
+}
+
+model TipoDocumentoTipoCliente {
+  id              String        @id @default(uuid()) @db.Uuid
+  tipoDocumentoId String        @db.Uuid
+  tipoDocumento   TipoDocumento @relation(fields: [tipoDocumentoId], references: [id])
+  segmentoId      String?       @db.Uuid
+  segmento        Segmento?     @relation(fields: [segmentoId], references: [id])
+}
+
+model Plano {
+  id                   String    @id @default(uuid()) @db.Uuid
+  nome                 String
+  periodo              String?
+  quantidadeDocumentos Int?
+  status               Status    @default(ATIVO)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  clientes             Cliente[]
+}
+
+model Segmento {
+  id            String   @id @default(uuid()) @db.Uuid
+  identificacao String?
+  nome          String
+  status        Status   @default(ATIVO)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  clientes            Cliente[]
+  papelTipoClientes   PapelTipoCliente[]
+  tipoDocTipoClientes TipoDocumentoTipoCliente[]
+}
+
+// Parametrização chave-valor por cliente (templates email/whatsapp, flags, storage…)
+model SistemaTipoAtributo {
+  id           String            @id @default(uuid()) @db.Uuid
+  tipoAtributo String            @unique // SistemaTipoAtributoEnum (~60 valores)
+  categoria    String // SistemaTipoAtributoCategoriaEnum
+  descricao    String?
+  tipoValor    TipoValorAtributo
+  atributos    SistemaAtributo[]
+}
+
+model SistemaAtributo {
+  id             String              @id @default(uuid()) @db.Uuid
+  tipoAtributoId String              @db.Uuid
+  tipoAtributo   SistemaTipoAtributo @relation(fields: [tipoAtributoId], references: [id])
+  clienteId      String              @db.Uuid
+  cliente        Cliente             @relation(fields: [clienteId], references: [id])
+  valorAtributo  String // texto/HTML/etc conforme tipoValor
+  status         Status              @default(ATIVO)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  termos         UsuarioTermo[]
+
+  @@unique([clienteId, tipoAtributoId])
+}
+
+model Pais {
+  id                 String           @id @default(uuid()) @db.Uuid
+  nome               String
+  codigoPais         String?
+  capital            String?
+  codigoTelefonePais Int?
+  bandeiraEmoji      String?
+  idiomas            PaisIdiomas[]
+  enderecos          PessoaEndereco[]
+  telefones          PessoaTelefone[]
+}
+
+model PaisIdiomas {
+  id     String @id @default(uuid()) @db.Uuid
+  paisId String @db.Uuid
+  pais   Pais   @relation(fields: [paisId], references: [id])
+  code   String
+  name   String
+}
+
+model TipoEndereco {
+  id            String           @id @default(uuid()) @db.Uuid
+  clienteId     String           @db.Uuid
+  cliente       Cliente          @relation(fields: [clienteId], references: [id])
+  nome          String
+  identificacao String?
+  status        Status           @default(ATIVO)
+  enderecos     PessoaEndereco[]
+}
+
+model TipoTelefone {
+  id            String           @id @default(uuid()) @db.Uuid
+  clienteId     String           @db.Uuid
+  cliente       Cliente          @relation(fields: [clienteId], references: [id])
+  nome          String
+  identificacao String?
+  status        Status           @default(ATIVO)
+  telefones     PessoaTelefone[]
+}
+
+// ─────────────────────── AGREGADO CONTRATO ───────────────────────
+
+model Contrato {
+  id                      String          @id @default(uuid()) @db.Uuid
+  clienteId               String          @db.Uuid // custodiante (tenant)
+  cliente                 Cliente         @relation(fields: [clienteId], references: [id])
+  remetenteId             String          @db.Uuid
+  remetente               Usuario         @relation("ContratoRemetente", fields: [remetenteId], references: [id])
+  identificador           String?
+  assunto                 String?
+  tipoContrato            String?
+  valorContrato           Decimal?        @db.Decimal(18, 2) // (corrige typo "valorContratro")
+  moeda                   String?
+  tipoIntegracao          Int?
+  statusContrato          StatusContrato  @default(NAO_LIBERADO_ASSINATURA)
+  ordemAssinatura         OrdemAssinatura @default(PARALELA)
+  status                  Status          @default(ATIVO)
+  liberadoAssinatura      Boolean         @default(false)
+  validado                Boolean         @default(false)
+  validacaoMensagem       String?
+  // cancelamento / recusa
+  motivoCancelamento      String?
+  usuarioCancelamentoId   String?         @db.Uuid
+  usuarioCancelamento     Usuario?        @relation("ContratoCancelamento", fields: [usuarioCancelamentoId], references: [id])
+  dataCancelamento        DateTime?
+  motivoRecusa            String?
+  usuarioRecusaId         String?         @db.Uuid
+  usuarioRecusa           Usuario?        @relation("ContratoRecusa", fields: [usuarioRecusaId], references: [id])
+  dataRecusa              DateTime?
+  // solicitação de assinatura + carimbo do tempo
+  usuarioSolicitacaoId    String?         @db.Uuid
+  usuarioSolicitacao      Usuario?        @relation("ContratoSolicitacao", fields: [usuarioSolicitacaoId], references: [id])
+  dataSolicitacao         DateTime?
+  carimboTempoSolicitacao String?
+  dataStatusContrato      DateTime?
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  partes     ContratoParte[]
+  documentos ContratoDocumento[]
+  logs       ContratoLog[]
+
+  @@index([clienteId, statusContrato])
+  @@index([remetenteId])
+}
+
+model ContratoParte {
+  id                  String           @id @default(uuid()) @db.Uuid
+  contratoId          String           @db.Uuid
+  contrato            Contrato         @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  tipoPessoa          TipoPessoa
+  cpfCnpj             String
+  nomeRazaoSocial     String
+  email               String?
+  celular             String?
+  statusAssinatura    StatusAssinatura @default(NAO_ASSINADO)
+  ordem               Int              @default(0)
+  liberadoAssinatura  Boolean          @default(false)
+  requisitoAssinatura String?
+  // acesso por link público
+  chaveAcesso         String?          @unique
+  validadeChaveAcesso DateTime?
+  // auto-relação: contato vinculado a uma parte PJ
+  contratoPartePjId   String?          @db.Uuid
+  contratoPartePj     ContratoParte?   @relation("ParteContatos", fields: [contratoPartePjId], references: [id])
+  contatos            ContratoParte[]  @relation("ParteContatos")
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  papeis      ContratoPartePapel[]
+  tokens      TokenAssinatura[]
+  assinaturas ContratoParteDocumento[]
+  posicoes    ContratoPosicaoAssinatura[]
+
+  @@index([contratoId])
+  @@index([chaveAcesso])
+}
+
+model ContratoDocumento {
+  id                   String          @id @default(uuid()) @db.Uuid
+  contratoId           String          @db.Uuid
+  contrato             Contrato        @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  tipoDocumentoId      String?         @db.Uuid
+  tipoDocumento        TipoDocumento?  @relation(fields: [tipoDocumentoId], references: [id])
+  nomeDocumento        String
+  // CONTEÚDO NO S3 — não no banco (corrige BLOB no SQL da v1)
+  storageKeyOriginal   String?
+  storageKeyAssinado   String?
+  sha256Original       String?
+  sha256Assinado       String?
+  dadosOrigem          String? // metadado (JSON) — antes @Lob EAGER na v1
+  statusDocumento      StatusDocumento @default(NAO_ASSINADO)
+  status               Status          @default(ATIVO)
+  dataAssinado         DateTime?
+  carimboTempoAssinado String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  papeis      ContratoDocumentoPapel[]
+  assinaturas ContratoParteDocumento[]
+  posicoes    ContratoPosicaoAssinatura[]
+
+  @@index([contratoId])
+}
+
+// Onde a assinatura visível de cada parte aparece no documento (posicionamento visual).
+// Coordenadas em FRAÇÃO da página (0..1), origem no topo-esquerdo → robusto a zoom/tamanho.
+model ContratoPosicaoAssinatura {
+  id                  String            @id @default(uuid()) @db.Uuid
+  contratoDocumentoId String            @db.Uuid
+  contratoDocumento   ContratoDocumento @relation(fields: [contratoDocumentoId], references: [id], onDelete: Cascade)
+  contratoParteId     String            @db.Uuid
+  contratoParte       ContratoParte     @relation(fields: [contratoParteId], references: [id], onDelete: Cascade)
+  pagina              Int
+  x                   Float
+  y                   Float
+  largura             Float
+  altura              Float
+
+  @@index([contratoDocumentoId])
+}
+
+model ContratoPartePapel {
+  id              String                   @id @default(uuid()) @db.Uuid
+  contratoParteId String                   @db.Uuid
+  contratoParte   ContratoParte            @relation(fields: [contratoParteId], references: [id], onDelete: Cascade)
+  papelId         String                   @db.Uuid
+  papel           Papel                    @relation(fields: [papelId], references: [id])
+  assinaturas     ContratoParteDocumento[]
+
+  @@index([contratoParteId])
+}
+
+model ContratoDocumentoPapel {
+  id                  String            @id @default(uuid()) @db.Uuid
+  contratoDocumentoId String            @db.Uuid
+  contratoDocumento   ContratoDocumento @relation(fields: [contratoDocumentoId], references: [id], onDelete: Cascade)
+  papelId             String            @db.Uuid
+  papel               Papel             @relation(fields: [papelId], references: [id])
+}
+
+// Prova efetiva da assinatura (parte × documento)
+model ContratoParteDocumento {
+  id                   String              @id @default(uuid()) @db.Uuid
+  contratoParteId      String              @db.Uuid
+  contratoParte        ContratoParte       @relation(fields: [contratoParteId], references: [id], onDelete: Cascade)
+  contratoPartePapelId String?             @db.Uuid
+  contratoPartePapel   ContratoPartePapel? @relation(fields: [contratoPartePapelId], references: [id])
+  documentoId          String              @db.Uuid
+  documento            ContratoDocumento   @relation(fields: [documentoId], references: [id], onDelete: Cascade)
+  usuarioId            String?             @db.Uuid
+  usuario              Usuario?            @relation(fields: [usuarioId], references: [id])
+  tipoAssinatura       TipoAssinatura
+  // prova / trilha de auditoria
+  assinaturaStorageKey String? // assinatura/PDF assinado no S3 (não byte[] no banco)
+  ip                   String?
+  carimboTempo         String? // carimbo do tempo do provedor (TSA real)
+  serialCertificado    String?
+  providerRef          String? // id da transação no gov.br/cloud provider
+  dataAssinatura       DateTime            @default(now())
+
+  @@unique([contratoParteId, documentoId])
+  @@index([documentoId])
+}
+
+model ContratoLog {
+  id                  String   @id @default(uuid()) @db.Uuid
+  contratoId          String   @db.Uuid
+  contrato            Contrato @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  contratoDocumentoId String?  @db.Uuid
+  log                 String
+  logSistema          Boolean  @default(false)
+  carimboTempo        String?
+  dataLog             DateTime @default(now())
+
+  @@index([contratoId])
+}
+
+// Parâmetros por cliente (prazos + mensagem de convite)
+model ConfiguracaoCliente {
+  clienteId          String   @id @db.Uuid
+  cliente            Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  prazoExpiracaoDias Int      @default(30)
+  prazoLembreteDias  Int      @default(3)
+  mensagemConvite    String?
+  updatedAt          DateTime @updatedAt
+}
+
+// Chave de API por cliente (integração externa). Guardamos só o HASH da chave.
+model ApiKey {
+  id        String    @id @default(uuid()) @db.Uuid
+  clienteId String    @db.Uuid
+  cliente   Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  nome      String
+  prefixo   String // primeiros chars (ex.: ak_live_ab12) p/ exibir/identificar
+  chaveHash String    @unique // sha256 da chave completa
+  status    Status    @default(ATIVO)
+  ultimoUso DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([clienteId])
+  @@index([prefixo])
+}
+
+// Endpoint de webhook por cliente; recebe eventos do ciclo de vida do contrato.
+model Webhook {
+  id        String           @id @default(uuid()) @db.Uuid
+  clienteId String           @db.Uuid
+  cliente   Cliente          @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  url       String
+  secret    String // p/ assinatura HMAC-SHA256 do payload
+  eventos   String           @default("*") // CSV de eventos; "*" = todos
+  status    Status           @default(ATIVO)
+  createdAt DateTime         @default(now())
+  entregas  WebhookEntrega[]
+
+  @@index([clienteId])
+}
+
+// Log de cada tentativa de entrega de webhook (auditoria + reentrega).
+model WebhookEntrega {
+  id         String   @id @default(uuid()) @db.Uuid
+  webhookId  String   @db.Uuid
+  webhook    Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  evento     String
+  payload    String
+  statusHttp Int?
+  sucesso    Boolean  @default(false)
+  tentativas Int      @default(0)
+  erro       String?
+  createdAt  DateTime @default(now())
+
+  @@index([webhookId])
+  @@index([sucesso])
+}
+
+// Rate limiting (janela fixa) — contador compartilhado entre Lambdas via Postgres
+model RateLimit {
+  chave       String   @id
+  windowStart DateTime
+  count       Int      @default(0)
+}
+
+// Fila de envio (email/whatsapp/sms) com controle de tentativa/backoff
+model EmailFila {
+  id              String       @id @default(uuid()) @db.Uuid
+  tipoEnvio       TipoEnvioMsg @default(EMAIL)
+  email           String?
+  enviado         Boolean      @default(false)
+  tentativas      Int          @default(0)
+  logSucesso      String?
+  logFalha        String?
+  erroEnvio       String?
+  dataEnvio       DateTime?
+  dataUltimoEnvio DateTime?
+  createdAt       DateTime     @default(now())
+
+  @@index([enviado, dataUltimoEnvio])
+}
